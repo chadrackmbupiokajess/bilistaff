@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ formation.titre }} - BiliStaff{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-8 p-6 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-2xl shadow-sm flex items-center">
+                    <i class="fas fa-check-circle mr-4 text-2xl"></i>
+                    <p class="font-bold">{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="bg-white rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10 lg:p-16">
+                <!-- Image et infos principales -->
+                <div>
+                    {% if formation.image %}
+                        <img src="{{ formation.image.url }}" alt="{{ formation.titre }}" class="w-full h-96 object-cover rounded-2xl shadow-lg mb-8">
+                    {% else %}
+                        <div class="w-full h-96 bg-slate-200 rounded-2xl flex items-center justify-center mb-8">
+                            <i class="fas fa-image text-6xl text-slate-400"></i>
+                        </div>
+                    {% endif %}
+
+                    <h1 class="text-5xl font-extrabold text-primary mb-4">{{ formation.titre }}</h1>
+                    <div class="flex items-center space-x-4 mb-6">
+                        <span class="bg-accent text-white px-4 py-2 rounded-full text-sm font-bold">{{ formation.niveau }}</span>
+                        <span class="text-slate-500 text-sm font-medium"><i class="far fa-clock mr-2"></i>{{ formation.duree }}</span>
+                    </div>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-8">{{ formation.description }}</p>
+
+                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <p class="text-sm text-slate-400 font-bold uppercase">Investissement</p>
+                                <span class="text-4xl font-black text-primary">{{ formation.prix }} €</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-bold text-accent uppercase tracking-widest">Disponibilité</p>
+                                <div class="flex space-x-2 mt-1">
+                                    {% if formation.disponible_en_ligne %}<i class="fas fa-laptop text-primary" title="En ligne"></i>{% endif %}
+                                    {% if formation.disponible_presentiel %}<i class="fas fa-users text-primary" title="Présentiel"></i>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if user.is_authenticated %}
+                            {% if deja_inscrit %}
+                                <div class="bg-blue-100 text-blue-700 p-4 rounded-xl text-center font-bold">
+                                    <i class="fas fa-info-circle mr-2"></i> Vous êtes déjà inscrit à cette formation.
+                                </div>
+                            {% else %}
+                                <form method="post" class="space-y-6">
+                                    {% csrf_token %}
+                                    <div>
+                                        <label class="block text-sm font-bold text-primary mb-3 uppercase tracking-wider">Choisissez votre modalité :</label>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            {% if formation.disponible_en_ligne %}
+                                            <label class="relative flex flex-col p-4 bg-white border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-accent transition-all">
+                                                <input type="radio" name="modalite" value="en_ligne" checked class="absolute top-4 right-4 text-accent">
+                                                <i class="fas fa-laptop text-2xl mb-2 text-primary"></i>
+                                                <span class="font-bold text-primary">En Ligne</span>
+                                                <span class="text-xs text-slate-400">À votre rythme</span>
+                                            </label>
+                                            {% endif %}
+                                            {% if formation.disponible_presentiel %}
+                                            <label class="relative flex flex-col p-4 bg-white border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-accent transition-all">
+                                                <input type="radio" name="modalite" value="presentiel" class="absolute top-4 right-4 text-accent">
+                                                <i class="fas fa-users text-2xl mb-2 text-primary"></i>
+                                                <span class="font-bold text-primary">Présentiel</span>
+                                                <span class="text-xs text-slate-400">Dans nos locaux</span>
+                                            </label>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="w-full bg-accent text-white py-5 rounded-2xl font-black text-xl hover:bg-blue-600 transition-all shadow-2xl shadow-blue-500/20">
+                                        Confirmer mon Inscription
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'connexion' %}" class="block text-center bg-primary text-white py-5 rounded-2xl font-black text-xl hover:bg-slate-800 transition-all">
+                                Connectez-vous pour vous inscrire
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Programme de la formation -->
+                <div>
+                    <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+                        <span class="w-12 h-1 bg-accent mr-4 rounded-full"></span>
+                        Programme de Formation
+                    </h2>
+                    <div class="space-y-6">
+                        {% for item in programme_list %}
+                            <div class="flex items-start space-x-4 bg-white p-6 rounded-2xl border border-slate-50 hover:shadow-md transition-shadow">
+                                <div class="w-8 h-8 bg-blue-50 rounded-full flex-shrink-0 flex items-center justify-center text-accent font-bold">
+                                    {{ forloop.counter }}
+                                </div>
+                                <span class="text-slate-700 text-lg font-medium leading-relaxed">{{ item }}</span>
+                            </div>
+                        {% empty %}
+                            <p class="text-slate-500 italic">Le programme détaillé sera bientôt disponible.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-12 bg-primary p-10 rounded-[2.5rem] text-center text-white relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+                        <h3 class="text-2xl font-bold mb-4">Besoin de conseils ?</h3>
+                        <p class="text-slate-400 mb-8">Nos experts sont disponibles pour vous orienter dans votre choix.</p>
+                        <a href="#" class="inline-flex items-center bg-white text-primary px-8 py-4 rounded-2xl font-bold hover:bg-accent hover:text-white transition-all">
+                            <i class="fas fa-phone-alt mr-3"></i> Discuter avec un conseiller
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

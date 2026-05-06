@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BiliStaff - Excellence en Formation{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0F172A',
+                        secondary: '#334155',
+                        accent: '#3B82F6',
+                        success: '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #3B82F610, transparent),
+                        radial-gradient(circle at bottom left, #10B98110, transparent);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans flex flex-col min-h-screen">
+    <nav class="glass sticky top-0 z-50 w-full border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-extrabold tracking-tight text-primary">Bili<span class="text-accent">Staff</span></span>
+                    </a>
+                    <div class="hidden lg:ml-12 lg:flex lg:space-x-10">
+                        <a href="{% url 'home' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Accueil</a>
+                        <a href="{% url 'formations' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Formations</a>
+                        <a href="{% url 'galerie' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Galerie</a>
+                        <a href="{% url 'blog' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Blog</a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'forum' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Forum</a>
+                        <a href="{% url 'chat' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Chat</a>
+                        {% endif %}
+                        <a href="{% url 'a_propos' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">À Propos</a>
+                    </div>
+                </div>
+                <div class="hidden lg:flex items-center space-x-6">
+                    {% if user.is_authenticated %}
+                        <span class="text-sm font-medium text-slate-500">Bonjour, <span class="text-primary font-bold">{{ user.username }}</span></span>
+                        <a href="{% url 'deconnexion' %}" class="text-slate-600 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></a>
+                    {% else %}
+                        <a href="{% url 'connexion' %}" class="text-primary font-bold hover:text-accent transition-colors">Connexion</a>
+                        <a href="{% url 'inscription' %}" class="bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10">S'inscrire</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-primary text-slate-300 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white tracking-tight">BiliStaff</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed mb-6">
+                        L'excellence académique à portée de clic. Rejoignez la communauté BiliStaff pour transformer votre avenir.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-6">Formation</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="{% url 'formations' %}" class="hover:text-white transition-colors">Toutes nos formations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Formations en ligne</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sessions Présentielles</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Certifications</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-6">Ressources</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="{% url 'blog' %}" class="hover:text-white transition-colors">Le Blog</a></li>
+                        <li><a href="{% url 'forum' %}" class="hover:text-white transition-colors">Espace Forum</a></li>
+                        <li><a href="{% url 'galerie' %}" class="hover:text-white transition-colors">Galerie Photos</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Aide & Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-6">Contact</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-map-marker-alt text-accent mt-1"></i>
+                            <span>123 Avenue de la Réussite,<br>75000 Paris</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-phone-alt text-accent"></i>
+                            <span>+33 1 23 45 67 89</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-accent"></i>
+                            <span>contact@bilistaff.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs">
+                <p>&copy; 2024 BiliStaff. Développé avec excellence.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Confidentialité</a>
+                    <a href="#" class="hover:text-white transition-colors">Mentions légales</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

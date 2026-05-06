@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}À Propos - BiliStaff{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold text-primary mb-6">À Propos de BiliStaff</h1>
+            <p class="text-xl text-slate-500 max-w-2xl mx-auto">Notre mission, notre vision, et l'équipe passionnée derrière votre succès.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+            <div class="lg:order-2">
+                <img src="https://images.unsplash.com/photo-1521737711867-e3b973753422?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                     alt="Équipe BiliStaff"
+                     class="rounded-3xl shadow-2xl border border-slate-100">
+            </div>
+            <div class="lg:order-1">
+                <h2 class="text-4xl font-bold text-primary mb-6">Notre Histoire</h2>
+                <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                    Fondée en 2024, BiliStaff est née de la conviction que l'accès à une formation de qualité est la clé de la réussite professionnelle.
+                    Nous avons créé une plateforme innovante pour offrir des programmes de formation en ligne et en présentiel, conçus par des experts
+                    de l'industrie. Notre objectif est de combler le fossé entre les compétences recherchées sur le marché du travail et les talents disponibles.
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    Nous nous engageons à fournir une expérience d'apprentissage immersive, flexible et adaptée aux besoins de chacun,
+                    permettant à nos étudiants de maîtriser les technologies et les méthodologies les plus récentes.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+            <div>
+                <img src="https://images.unsplash.com/photo-1507679799977-c9eb8fec6207?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                     alt="Mission BiliStaff"
+                     class="rounded-3xl shadow-2xl border border-slate-100">
+            </div>
+            <div>
+                <h2 class="text-4xl font-bold text-primary mb-6">Notre Mission & Vision</h2>
+                <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                    <span class="font-bold text-primary">Mission :</span> Démocratiser l'accès à l'éducation professionnelle de pointe,
+                    en offrant des formations pratiques et certifiantes qui répondent aux exigences du marché global.
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    <span class="font-bold text-primary">Vision :</span> Devenir le leader de la formation hybride, reconnu pour
+                    l'excellence de ses programmes, l'innovation de sa pédagogie et l'impact positif sur la carrière de ses diplômés.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-primary mb-6">Nos Valeurs</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-lightbulb text-3xl text-accent"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Innovation</h3>
+                    <p class="text-slate-600">Nous explorons constamment de nouvelles méthodes d'enseignement et technologies.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-3xl text-accent"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Excellence</h3>
+                    <p class="text-slate-600">Nous visons la plus haute qualité dans nos contenus et notre accompagnement.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-handshake text-3xl text-accent"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Engagement</h3>
+                    <p class="text-slate-600">Nous nous engageons pour la réussite de chaque étudiant.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

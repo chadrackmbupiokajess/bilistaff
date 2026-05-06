@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog - BiliStaff{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-xl">
+            <h1 class="text-4xl font-black text-primary mb-4 tracking-tight">Notre Blog</h1>
+            <p class="text-slate-500 font-medium leading-relaxed">Découvrez nos derniers articles, conseils et actualités sur le monde de la formation et du digital.</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for blog in blogs %}
+            <article class="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group">
+                <div class="relative h-64 overflow-hidden">
+                    {% if blog.image %}
+                        <img src="{{ blog.image.url }}" alt="{{ blog.titre }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    {% else %}
+                        <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                            <i class="fas fa-newspaper text-4xl text-slate-400"></i>
+                        </div>
+                    {% endif %}
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-accent text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg">
+                            {{ blog.date_publication|date:"d M Y" }}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <h2 class="text-2xl font-bold mb-4 group-hover:text-accent transition-colors">{{ blog.titre }}</h2>
+                    <p class="text-slate-500 line-clamp-3 mb-6 leading-relaxed">{{ blog.contenu }}</p>
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-primary">
+                                {{ blog.auteur.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-sm font-semibold text-slate-700">{{ blog.auteur.username }}</span>
+                        </div>
+                        <a href="{% url 'blog_detail' blog.pk %}" class="text-accent font-bold hover:underline">Lire la suite</a>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+                <i class="fas fa-pen-nib text-4xl text-slate-300 mb-4"></i>
+                <p class="text-slate-400">Aucun article publié pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Forum Communautaire - BiliStaff{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-slate-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12">
+            <div>
+                <h1 class="text-4xl font-extrabold text-primary tracking-tight">Espace Forum</h1>
+                <p class="text-slate-500 mt-2 font-medium">Échangez avec les autres étudiants et nos formateurs.</p>
+            </div>
+            <button class="mt-6 md:mt-0 bg-accent text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Nouveau Sujet
+            </button>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="hidden md:grid grid-cols-6 gap-4 p-6 bg-slate-50 border-b border-slate-100 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                <div class="col-span-3">Sujet</div>
+                <div class="text-center">Réponses</div>
+                <div class="text-center">Auteur</div>
+                <div class="text-right">Dernière activité</div>
+            </div>
+
+            <div class="divide-y divide-slate-100">
+                {% for sujet in sujets %}
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 p-8 hover:bg-slate-50 transition-colors group">
+                    <div class="col-span-1 md:col-span-3">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:bg-accent transition-colors">
+                                <i class="fas fa-comments text-accent group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <a href="#" class="text-xl font-bold text-primary hover:text-accent transition-colors">{{ sujet.titre }}</a>
+                                <p class="text-sm text-slate-500 mt-1">Lancé par {{ sujet.auteur.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex md:block items-center justify-center">
+                        <span class="md:hidden text-sm font-bold text-slate-400 mr-2">Réponses:</span>
+                        <div class="bg-slate-100 px-4 py-1 rounded-full text-sm font-bold text-slate-700">
+                            {{ sujet.messages.count }}
+                        </div>
+                    </div>
+                    <div class="flex md:block items-center justify-center text-center">
+                        <span class="md:hidden text-sm font-bold text-slate-400 mr-2">Auteur:</span>
+                        <div class="flex items-center md:justify-center space-x-2">
+                            <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs">
+                                {{ sujet.auteur.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-sm font-medium text-slate-700">{{ sujet.auteur.username }}</span>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <p class="text-sm text-slate-500">{{ sujet.date_creation|date:"d M Y" }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-20">
+                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-comment-slash text-3xl text-slate-300"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium">Aucun sujet n'a été créé pour le moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

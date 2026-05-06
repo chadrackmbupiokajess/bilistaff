@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ sujet.titre }} - Forum BiliStaff{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-slate-50 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{% url 'forum' %}" class="text-slate-500 font-bold hover:text-primary transition-colors flex items-center mb-8">
+            <i class="fas fa-arrow-left mr-2"></i> Retour au forum
+        </a>
+
+        <!-- Sujet Principal -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden mb-10">
+            <div class="p-8 lg:p-12 border-b border-slate-50 bg-slate-50/50">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold">
+                        {{ sujet.auteur.username|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-primary">{{ sujet.auteur.username }}</p>
+                        <p class="text-xs text-slate-400">Lancé le {{ sujet.date_creation|date:"d M Y à H:i" }}</p>
+                    </div>
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-black text-primary leading-tight">{{ sujet.titre }}</h1>
+            </div>
+
+            <!-- Liste des Messages -->
+            <div class="divide-y divide-slate-100">
+                {% for message in sujet.messages.all %}
+                <div class="p-8 lg:p-12 hover:bg-slate-50/30 transition-colors">
+                    <div class="flex items-start space-x-6">
+                        <div class="w-12 h-12 bg-slate-100 rounded-full flex-shrink-0 flex items-center justify-center text-slate-500 font-bold border border-slate-200">
+                            {{ message.auteur.username|slice:":1"|upper }}
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-bold text-primary">{{ message.auteur.username }}</span>
+                                <span class="text-xs text-slate-400">{{ message.date_envoi|date:"d M Y à H:i" }}</span>
+                            </div>
+                            <div class="text-slate-600 leading-relaxed text-lg">
+                                {{ message.contenu|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-12 text-center">
+                    <p class="text-slate-400 italic text-lg">Aucune réponse pour le moment. Soyez le premier à répondre !</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Formulaire de Réponse -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8 lg:p-12">
+            <h3 class="text-2xl font-bold text-primary mb-8 flex items-center">
+                <i class="fas fa-reply mr-4 text-accent"></i> Ajouter une réponse
+            </h3>
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <textarea name="contenu" rows="6" required
+                        placeholder="Écrivez votre message ici..."
+                        class="w-full px-6 py-4 rounded-3xl bg-slate-50 border border-slate-200 focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all text-slate-700 leading-relaxed"></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-primary text-white px-10 py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 flex items-center">
+                        Envoyer ma réponse <i class="fas fa-paper-plane ml-3"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
