@@ -3,26 +3,26 @@
 {% block title %}Galerie Photo - BiliStaff{% endblock %}
 
 {% block content %}
-<section class="py-20 bg-slate-50 min-h-screen">
+<section class="py-12 sm:py-16 md:py-20 bg-slate-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-20">
-            <h1 class="text-5xl font-black text-primary mb-4 tracking-tight">Galerie Bili<span class="text-accent">Staff</span></h1>
-            <p class="text-slate-500 font-medium text-lg max-w-2xl mx-auto">Explorez nos installations modernes, nos événements et les moments forts de nos formations.</p>
-            <div class="w-24 h-1.5 bg-accent mx-auto mt-6 rounded-full"></div>
+        <div class="text-center mb-12 sm:mb-16 md:mb-20">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-primary mb-3 sm:mb-4 tracking-tight">Galerie Bili<span class="text-accent">Staff</span></h1>
+            <p class="text-base sm:text-lg text-slate-500 font-medium max-w-2xl mx-auto">Explorez nos installations modernes, nos événements et les moments forts de nos formations.</p>
+            <div class="w-20 sm:w-24 h-1 sm:h-1.5 bg-accent mx-auto mt-4 sm:mt-6 rounded-full"></div>
         </div>
 
         <!-- Grid de la Galerie -->
-        <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 sm:gap-8 space-y-6 sm:space-y-8">
             {% for item in images %}
-            <div class="break-inside-avoid group relative overflow-hidden rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-700 cursor-pointer">
+            <div class="break-inside-avoid group relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-700 cursor-pointer">
                 {% if item.image %}
                     <img src="{{ item.image.url }}" alt="{{ item.description }}" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-1000">
 
                     <!-- Overlay au survol -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10">
-                        <div class="transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-                            <span class="text-accent font-bold text-xs uppercase tracking-[0.2em] mb-2 block">BiliStaff Moments</span>
-                            <h3 class="text-white text-2xl font-black mb-4">{{ item.description }}</h3>
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 sm:p-8">
+                        <div class="transform translate-y-6 group-hover:translate-y-0 transition-transform duration-500">
+                            <span class="text-accent font-bold text-xs uppercase tracking-[0.2em] mb-1 sm:mb-2 block">BiliStaff Moments</span>
+                            <h3 class="text-white text-xl sm:text-2xl font-black mb-3 sm:mb-4">{{ item.description }}</h3>
                             <div class="flex items-center text-slate-300 text-sm">
                                 <i class="far fa-calendar-alt mr-2"></i>
                                 {{ item.date_ajout|date:"F Y" }}
@@ -32,9 +32,9 @@
                 {% endif %}
             </div>
             {% empty %}
-            <div class="col-span-full text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
-                <i class="fas fa-camera-retro text-5xl text-slate-300 mb-6 block"></i>
-                <p class="text-slate-400 font-medium text-xl">La galerie est en cours de préparation...</p>
+            <div class="col-span-full text-center py-20 sm:py-32 bg-white rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-slate-200">
+                <i class="fas fa-camera-retro text-4xl sm:text-5xl text-slate-300 mb-4 sm:mb-6 block"></i>
+                <p class="text-base sm:text-lg text-slate-400 font-medium">La galerie est en cours de préparation...</p>
             </div>
             {% endfor %}
         </div>
@@ -44,8 +44,8 @@
 <!-- Script simple pour un effet de lightbox (optionnel) -->
 <style>
     .columns-1 { column-count: 1; }
-    @media (min-width: 768px) { .columns-2 { column-count: 2; } }
-    @media (min-width: 1024px) { .columns-3 { column-count: 3; } }
+    @media (min-width: 640px) { .sm\:columns-2 { column-count: 2; } } /* Tailwind's sm breakpoint */
+    @media (min-width: 1024px) { .lg\:columns-3 { column-count: 3; } } /* Tailwind's lg breakpoint */
     .break-inside-avoid { break-inside: avoid; }
 </style>
 {% endblock %}

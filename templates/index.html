@@ -2,52 +2,52 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-gradient pt-20 pb-32 overflow-hidden">
+<section class="hero-gradient pt-16 pb-24 sm:pt-20 sm:pb-32 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center">
             <div class="lg:w-3/5 text-center lg:text-left z-10">
-                <div class="inline-flex items-center space-x-2 bg-blue-50 text-accent px-4 py-2 rounded-full mb-8 border border-blue-100 shadow-sm">
-                    <span class="relative flex h-3 w-3">
+                <div class="inline-flex items-center space-x-2 bg-blue-50 text-accent px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-6 sm:mb-8 border border-blue-100 shadow-sm">
+                    <span class="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-blue-500"></span>
                     </span>
-                    <span class="text-sm font-bold tracking-wide uppercase">Inscriptions Ouvertes 2024</span>
+                    <span class="text-xs sm:text-sm font-bold tracking-wide uppercase">Inscriptions Ouvertes 2024</span>
                 </div>
-                <h1 class="text-6xl lg:text-8xl font-extrabold text-primary leading-[1.1] mb-8 tracking-tighter">
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-primary leading-tight sm:leading-[1.1] mb-6 sm:mb-8 tracking-tighter">
                     L'avenir se construit <span class="text-accent">ici</span>.
                 </h1>
-                <p class="text-xl text-slate-500 mb-12 max-w-2xl leading-relaxed mx-auto lg:mx-0 font-medium">
+                <p class="text-base sm:text-lg text-slate-500 mb-8 sm:mb-12 max-w-2xl leading-relaxed mx-auto lg:mx-0 font-medium">
                     BiliStaff réinvente la formation avec une plateforme hybride ultra-performante. Apprenez des meilleurs, devenez le meilleur.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-6">
-                    <a href="{% url 'formations' %}" class="bg-accent text-white px-10 py-5 rounded-2xl font-extrabold text-lg hover:bg-blue-600 transition-all shadow-2xl shadow-blue-500/20 flex items-center justify-center group">
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start space-y-3 sm:space-y-0 sm:space-x-4">
+                    <a href="{% url 'formations' %}" class="bg-accent text-white text-center px-6 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center group">
                         Explorer les cours
-                        <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                        <i class="fas fa-arrow-right ml-2 sm:ml-3 group-hover:translate-x-1 transition-transform"></i>
                     </a>
-                    <a href="{% url 'inscription' %}" class="bg-white text-primary border-2 border-slate-200 px-10 py-5 rounded-2xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center">
+                    <a href="{% url 'inscription' %}" class="bg-white text-primary border-2 border-slate-200 text-center px-6 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-slate-50 transition-all flex items-center justify-center">
                         Commencer gratuitement
                     </a>
                 </div>
-                <div class="mt-12 flex items-center justify-center lg:justify-start space-x-8 opacity-60 grayscale hover:grayscale-0 transition-all">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="h-6" alt="Partner">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="h-6" alt="Partner">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg" class="h-6" alt="Partner">
+                <div class="mt-8 sm:mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-4 opacity-60 grayscale hover:grayscale-0 transition-all">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="h-5 sm:h-6" alt="Partner">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="h-5 sm:h-6" alt="Partner">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg" class="h-5 sm:h-6" alt="Partner">
                 </div>
             </div>
-            <div class="lg:w-2/5 mt-20 lg:mt-0 relative">
+            <div class="lg:w-2/5 mt-16 lg:mt-0 relative">
                 <div class="absolute inset-0 bg-accent rounded-3xl blur-3xl opacity-10 animate-pulse"></div>
-                <div class="relative glass p-4 rounded-[2.5rem] shadow-2xl border border-white">
+                <div class="relative glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border border-white">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
                          alt="Education Digitale"
-                         class="rounded-[2rem] object-cover h-[500px] w-full shadow-inner">
-                    <div class="absolute -bottom-10 -left-10 glass p-6 rounded-2xl shadow-xl border border-white hidden md:block animate-bounce-slow">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-success rounded-full flex items-center justify-center text-white">
-                                <i class="fas fa-check"></i>
+                         class="relative z-10 rounded-[1.5rem] sm:rounded-[2rem] object-cover h-80 sm:h-[400px] lg:h-[500px] w-full shadow-inner">
+                    <div class="absolute -bottom-8 -left-8 sm:-bottom-10 sm:-left-10 glass p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-xl border border-white hidden md:block animate-bounce-slow">
+                        <div class="flex items-center space-x-3 sm:space-x-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-success rounded-full flex items-center justify-center text-white">
+                                <i class="fas fa-check text-lg sm:text-xl"></i>
                             </div>
                             <div>
                                 <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Satisfaction</p>
-                                <p class="text-lg font-extrabold text-primary">99.8% Réussite</p>
+                                <p class="text-base sm:text-lg font-extrabold text-primary">99.8% Réussite</p>
                             </div>
                         </div>
                     </div>
@@ -58,75 +58,84 @@
 </section>
 
 <!-- Stats Section -->
-<section class="py-24 bg-white border-y border-slate-100">
+<section class="py-16 sm:py-24 bg-white border-y border-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div class="text-center">
-                <p class="text-5xl font-black text-primary mb-2">15k+</p>
-                <p class="text-slate-500 font-semibold">Étudiants Actifs</p>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-primary mb-1 sm:mb-2">15k+</p>
+                <p class="text-sm sm:text-base text-slate-500 font-semibold">Étudiants Actifs</p>
             </div>
             <div class="text-center">
-                <p class="text-5xl font-black text-accent mb-2">120+</p>
-                <p class="text-slate-500 font-semibold">Formations</p>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-accent mb-1 sm:mb-2">120+</p>
+                <p class="text-sm sm:text-base text-slate-500 font-semibold">Formations</p>
             </div>
             <div class="text-center">
-                <p class="text-5xl font-black text-primary mb-2">45+</p>
-                <p class="text-slate-500 font-semibold">Experts Mentors</p>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-primary mb-1 sm:mb-2">45+</p>
+                <p class="text-sm sm:text-base text-slate-500 font-semibold">Experts Mentors</p>
             </div>
             <div class="text-center">
-                <p class="text-5xl font-black text-success mb-2">24/7</p>
-                <p class="text-slate-500 font-semibold">Support Étudiant</p>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-success mb-1 sm:mb-2">24/7</p>
+                <p class="text-sm sm:text-base text-slate-500 font-semibold">Support Étudiant</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Recent Formations -->
-<section class="py-24">
+<section class="py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-end mb-16">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 sm:mb-16">
             <div>
-                <h2 class="text-4xl font-black text-primary tracking-tight">Nos Formations Vedettes</h2>
-                <p class="text-slate-500 mt-2">Les programmes les plus plébiscités ce mois-ci.</p>
+                <h2 class="text-3xl sm:text-4xl font-black text-primary tracking-tight">Nos Formations Vedettes</h2>
+                <p class="text-base sm:text-lg text-slate-500 mt-1 sm:mt-2">Les programmes les plus plébiscités ce mois-ci.</p>
             </div>
-            <a href="{% url 'formations' %}" class="text-accent font-bold hover:underline flex items-center group">
+            <a href="{% url 'formations' %}" class="text-accent font-bold hover:underline flex items-center group text-base sm:text-lg mt-4 sm:mt-0">
                 Voir tout le catalogue <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
             {% for formation in recent_formations %}
-            <div class="group bg-white rounded-[2rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500">
-                <div class="relative h-64 overflow-hidden">
+            <div class="group bg-white rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500">
+                <div class="relative h-56 sm:h-64 overflow-hidden">
                     {% if formation.image %}
                         <img src="{{ formation.image.url }}" alt="{{ formation.titre }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     {% else %}
                         <div class="w-full h-full bg-slate-200 flex items-center justify-center">
-                            <i class="fas fa-image text-4xl text-slate-400"></i>
+                            <i class="fas fa-image text-3xl sm:text-4xl text-slate-400"></i>
                         </div>
                     {% endif %}
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-xs font-black uppercase text-primary shadow-lg">
-                            {{ formation.est_en_ligne|yesno:"En Ligne,Présentiel" }}
+                    <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-1.5 sm:gap-2">
+                        <span class="bg-white/90 backdrop-blur px-3 py-1 sm:px-4 sm:py-1.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase text-primary shadow-sm">
+                            {% if formation.disponible_en_ligne and formation.disponible_presentiel %}
+                                Hybride
+                            {% elif formation.disponible_en_ligne %}
+                                En Ligne
+                            {% elif formation.disponible_presentiel %}
+                                Présentiel
+                            {% endif %}
+                        </span>
+                        <span class="bg-accent/90 backdrop-blur px-3 py-1 sm:px-4 sm:py-1.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase text-white shadow-sm">
+                            {{ formation.niveau }}
                         </span>
                     </div>
                 </div>
-                <div class="p-8">
-                    <h3 class="text-2xl font-bold mb-4 group-hover:text-accent transition-colors">{{ formation.titre }}</h3>
-                    <p class="text-slate-500 line-clamp-2 mb-6 leading-relaxed">{{ formation.description }}</p>
-                    <div class="flex items-center justify-between pt-6 border-t border-slate-50">
-                        <span class="text-3xl font-black text-primary">{{ formation.prix }} €</span>
-                        <a href="#" class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
-                            <i class="fas fa-plus"></i>
+                <div class="p-6 sm:p-8">
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-primary group-hover:text-accent transition-colors">{{ formation.titre }}</h3>
+                    <p class="text-sm sm:text-base text-slate-500 line-clamp-2 mb-5 sm:mb-6 leading-relaxed">{{ formation.description }}</p>
+                    <div class="flex items-center justify-between pt-5 sm:pt-6 border-t border-slate-50">
+                        <span class="text-2xl sm:text-3xl font-black text-primary">{{ formation.prix|floatformat:2 }} $</span>
+                        <a href="{% url 'formation_detail' formation.slug %}" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
+                            <i class="fas fa-plus text-base sm:text-lg"></i>
                         </a>
                     </div>
                 </div>
             </div>
             {% empty %}
             <!-- Fallback if no formations in DB -->
-            <div class="col-span-3 text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-                <i class="fas fa-layer-group text-4xl text-slate-300 mb-4"></i>
-                <p class="text-slate-400">Aucune formation disponible pour le moment.</p>
+            <div class="col-span-full text-center py-16 sm:py-20 bg-white rounded-2xl sm:rounded-3xl border-2 border-dashed border-slate-200">
+                <i class="fas fa-layer-group text-3xl sm:text-4xl text-slate-300 mb-3 sm:mb-4"></i>
+                <p class="text-base sm:text-lg text-slate-400">Aucune formation disponible pour le moment.</p>
             </div>
             {% endfor %}
         </div>

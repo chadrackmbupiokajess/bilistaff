@@ -3,20 +3,20 @@
 {% block title %}Forum Communautaire - BiliStaff{% endblock %}
 
 {% block content %}
-<section class="py-20 bg-slate-50 min-h-screen">
+<section class="py-12 sm:py-16 md:py-20 bg-slate-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 sm:mb-12">
             <div>
-                <h1 class="text-4xl font-extrabold text-primary tracking-tight">Espace Forum</h1>
-                <p class="text-slate-500 mt-2 font-medium">Échangez avec les autres étudiants et nos formateurs.</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-primary tracking-tight">Espace Forum</h1>
+                <p class="text-base sm:text-lg text-slate-500 mt-1 sm:mt-2 font-medium">Échangez avec les autres étudiants et nos formateurs.</p>
             </div>
-            <button class="mt-6 md:mt-0 bg-accent text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 flex items-center">
+            <button class="mt-6 md:mt-0 bg-accent text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center">
                 <i class="fas fa-plus mr-2"></i> Nouveau Sujet
             </button>
         </div>
 
-        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div class="hidden md:grid grid-cols-6 gap-4 p-6 bg-slate-50 border-b border-slate-100 text-sm font-bold text-slate-500 uppercase tracking-wider">
+        <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="hidden md:grid grid-cols-6 gap-4 p-4 sm:p-6 bg-slate-50 border-b border-slate-100 text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">
                 <div class="col-span-3">Sujet</div>
                 <div class="text-center">Réponses</div>
                 <div class="text-center">Auteur</div>
@@ -25,43 +25,43 @@
 
             <div class="divide-y divide-slate-100">
                 {% for sujet in sujets %}
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 p-8 hover:bg-slate-50 transition-colors group">
+                <a href="{% url 'forum_detail' sujet.pk %}" class="grid grid-cols-1 md:grid-cols-6 gap-4 p-6 sm:p-8 hover:bg-slate-50 transition-colors group">
                     <div class="col-span-1 md:col-span-3">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:bg-accent transition-colors">
-                                <i class="fas fa-comments text-accent group-hover:text-white transition-colors"></i>
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:bg-accent transition-colors">
+                                <i class="fas fa-comments text-accent group-hover:text-white text-base sm:text-lg transition-colors"></i>
                             </div>
                             <div>
-                                <a href="#" class="text-xl font-bold text-primary hover:text-accent transition-colors">{{ sujet.titre }}</a>
-                                <p class="text-sm text-slate-500 mt-1">Lancé par {{ sujet.auteur.username }}</p>
+                                <h3 class="text-lg sm:text-xl font-bold text-primary hover:text-accent transition-colors">{{ sujet.titre }}</h3>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Lancé par {{ sujet.auteur.username }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="flex md:block items-center justify-center">
-                        <span class="md:hidden text-sm font-bold text-slate-400 mr-2">Réponses:</span>
-                        <div class="bg-slate-100 px-4 py-1 rounded-full text-sm font-bold text-slate-700">
+                    <div class="flex md:block items-center justify-center mt-4 md:mt-0">
+                        <span class="md:hidden text-xs sm:text-sm font-bold text-slate-400 mr-2">Réponses:</span>
+                        <div class="bg-slate-100 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-slate-700">
                             {{ sujet.messages.count }}
                         </div>
                     </div>
-                    <div class="flex md:block items-center justify-center text-center">
-                        <span class="md:hidden text-sm font-bold text-slate-400 mr-2">Auteur:</span>
+                    <div class="flex md:block items-center justify-center text-center mt-4 md:mt-0">
+                        <span class="md:hidden text-xs sm:text-sm font-bold text-slate-400 mr-2">Auteur:</span>
                         <div class="flex items-center md:justify-center space-x-2">
-                            <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs">
                                 {{ sujet.auteur.username|slice:":1"|upper }}
                             </div>
-                            <span class="text-sm font-medium text-slate-700">{{ sujet.auteur.username }}</span>
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">{{ sujet.auteur.username }}</span>
                         </div>
                     </div>
-                    <div class="text-center md:text-right">
-                        <p class="text-sm text-slate-500">{{ sujet.date_creation|date:"d M Y" }}</p>
+                    <div class="text-center md:text-right mt-4 md:mt-0">
+                        <p class="text-xs sm:text-sm text-slate-500">{{ sujet.date_creation|date:"d M Y" }}</p>
                     </div>
-                </div>
+                </a>
                 {% empty %}
-                <div class="text-center py-20">
-                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-comment-slash text-3xl text-slate-300"></i>
+                <div class="text-center py-16 sm:py-20">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                        <i class="fas fa-comment-slash text-3xl sm:text-4xl text-slate-300"></i>
                     </div>
-                    <p class="text-slate-500 font-medium">Aucun sujet n'a été créé pour le moment.</p>
+                    <p class="text-base sm:text-lg text-slate-500 font-medium">Aucun sujet n'a été créé pour le moment.</p>
                 </div>
                 {% endfor %}
             </div>

@@ -3,38 +3,38 @@
 {% block title %}{{ blog.titre }} - BiliStaff{% endblock %}
 
 {% block content %}
-<section class="py-20 bg-slate-50">
+<section class="py-12 sm:py-16 md:py-20 bg-slate-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <article class="bg-white rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden">
+        <article class="bg-white rounded-[2rem] sm:rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden">
             {% if blog.image %}
-                <img src="{{ blog.image.url }}" alt="{{ blog.titre }}" class="w-full h-[500px] object-cover">
+                <img src="{{ blog.image.url }}" alt="{{ blog.titre }}" class="w-full h-64 sm:h-80 lg:h-[500px] object-cover">
             {% endif %}
 
-            <div class="p-10 lg:p-16">
-                <div class="flex items-center space-x-4 mb-8">
-                    <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+            <div class="p-6 sm:p-10 lg:p-16">
+                <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg">
                         {{ blog.auteur.username|slice:":1"|upper }}
                     </div>
                     <div>
-                        <p class="text-primary font-bold">{{ blog.auteur.username }}</p>
-                        <p class="text-slate-500 text-sm">Publié le {{ blog.date_publication|date:"d F Y" }}</p>
+                        <p class="text-primary font-bold text-sm sm:text-base">{{ blog.auteur.username }}</p>
+                        <p class="text-slate-500 text-xs sm:text-sm">Publié le {{ blog.date_publication|date:"d F Y" }}</p>
                     </div>
                 </div>
 
-                <h1 class="text-4xl lg:text-6xl font-black text-primary leading-tight mb-8">{{ blog.titre }}</h1>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-tight mb-6 sm:mb-8">{{ blog.titre }}</h1>
 
-                <div class="prose prose-lg prose-slate max-w-none text-slate-600 leading-relaxed mb-12">
+                <div class="prose prose-sm sm:prose-lg prose-slate max-w-none text-slate-600 leading-relaxed mb-8 sm:mb-12">
                     {{ blog.contenu|linebreaks }}
                 </div>
 
-                <div class="pt-10 border-t border-slate-100 flex items-center justify-between">
-                    <div class="flex space-x-4">
-                        <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">Partager :</span>
-                        <a href="#" class="text-slate-400 hover:text-accent transition-colors"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-slate-400 hover:text-accent transition-colors"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-slate-400 hover:text-accent transition-colors"><i class="fab fa-linkedin-in"></i></a>
+                <div class="pt-6 sm:pt-10 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <span class="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">Partager :</span>
+                        <a href="#" class="text-slate-400 hover:text-accent transition-colors text-base sm:text-lg"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-accent transition-colors text-base sm:text-lg"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-accent transition-colors text-base sm:text-lg"><i class="fab fa-linkedin-in"></i></a>
                     </div>
-                    <a href="{% url 'blog' %}" class="text-primary font-bold hover:text-accent transition-colors flex items-center">
+                    <a href="{% url 'blog' %}" class="text-primary font-bold hover:text-accent transition-colors flex items-center text-sm sm:text-base">
                         <i class="fas fa-arrow-left mr-2"></i> Retour au blog
                     </a>
                 </div>
@@ -42,15 +42,15 @@
         </article>
 
         <!-- Suggestions d'articles -->
-        <div class="mt-20">
-            <h2 class="text-3xl font-bold text-primary mb-10">Articles suggérés</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="mt-16 sm:mt-20">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-8 sm:mb-10">Articles suggérés</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                 {% for sug in suggestions %}
-                <a href="{% url 'blog_detail' sug.pk %}" class="group block bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl border border-slate-100 transition-all">
+                <a href="{% url 'blog_detail' sug.pk %}" class="group block bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl border border-slate-100 transition-all">
                     {% if sug.image %}
-                        <img src="{{ sug.image.url }}" alt="{{ sug.titre }}" class="w-full h-40 object-cover rounded-2xl mb-4 group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ sug.image.url }}" alt="{{ sug.titre }}" class="w-full h-32 sm:h-40 object-cover rounded-xl sm:rounded-2xl mb-3 sm:mb-4 group-hover:scale-105 transition-transform duration-500">
                     {% endif %}
-                    <h3 class="text-lg font-bold text-primary group-hover:text-accent transition-colors line-clamp-2">{{ sug.titre }}</h3>
+                    <h3 class="text-base sm:text-lg font-bold text-primary group-hover:text-accent transition-colors line-clamp-2">{{ sug.titre }}</h3>
                 </a>
                 {% endfor %}
             </div>

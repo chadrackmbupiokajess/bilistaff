@@ -3,87 +3,93 @@
 {% block title %}Nos Formations d'Excellence - BiliStaff{% endblock %}
 
 {% block content %}
-<section class="py-12 bg-slate-50 border-b border-slate-200">
+<section class="py-10 sm:py-12 bg-slate-50 border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8">
             <div class="max-w-xl">
-                <h1 class="text-4xl font-black text-primary mb-4 tracking-tight">Nos Formations</h1>
-                <p class="text-slate-500 font-medium leading-relaxed">Boostez votre carrière avec nos programmes intensifs conçus pour le marché actuel.</p>
+                <h1 class="text-3xl sm:text-4xl font-black text-primary mb-3 sm:mb-4 tracking-tight">Nos Formations</h1>
+                <p class="text-base sm:text-lg text-slate-500 font-medium leading-relaxed">Boostez votre carrière avec nos programmes intensifs conçus pour le marché actuel.</p>
             </div>
 
-            <form action="{% url 'formations' %}" method="get" class="flex w-full md:w-auto items-center bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
-                <input type="text" name="q" placeholder="Rechercher un cours..." class="flex-grow px-4 py-2 outline-none text-slate-600 font-medium">
-                <button type="submit" class="bg-primary text-white p-3 rounded-xl hover:bg-slate-800 transition-colors">
-                    <i class="fas fa-search"></i>
+            <form action="{% url 'formations' %}" method="get" class="flex w-full md:w-auto items-center bg-white p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200">
+                <input type="text" name="q" placeholder="Rechercher un cours..." class="flex-grow px-3 py-1.5 sm:px-4 sm:py-2 outline-none text-slate-600 font-medium text-sm sm:text-base">
+                <button type="submit" class="bg-primary text-white p-2 sm:p-3 rounded-lg sm:rounded-xl hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-search text-sm sm:text-base"></i>
                 </button>
             </form>
         </div>
 
-        <div class="flex flex-wrap gap-4 mt-12">
-            <a href="{% url 'formations' %}" class="px-6 py-2 rounded-full font-bold transition-all {% if not request.GET.categorie %}bg-primary text-white{% else %}bg-white text-slate-600 border border-slate-200 hover:border-accent{% endif %}">
+        <div class="flex flex-wrap gap-2 sm:gap-4 mt-8 sm:mt-12">
+            <a href="{% url 'formations' %}" class="px-4 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold transition-all text-sm sm:text-base {% if not request.GET.categorie %}bg-primary text-white{% else %}bg-white text-slate-600 border border-slate-200 hover:border-accent{% endif %}">
                 Tous
             </a>
             {% for cat in categories %}
-            <a href="?categorie={{ cat.slug }}" class="px-6 py-2 rounded-full font-bold transition-all {% if request.GET.categorie == cat.slug %}bg-primary text-white{% else %}bg-white text-slate-600 border border-slate-200 hover:border-accent{% endif %}">
-                <i class="{{ cat.icon }} mr-2"></i> {{ cat.nom }}
+            <a href="?categorie={{ cat.slug }}" class="px-4 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold transition-all text-sm sm:text-base {% if request.GET.categorie == cat.slug %}bg-primary text-white{% else %}bg-white text-slate-600 border border-slate-200 hover:border-accent{% endif %}">
+                <i class="{{ cat.icon }} mr-1.5 sm:mr-2"></i> {{ cat.nom }}
             </a>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="py-20 bg-slate-50">
+<section class="py-16 sm:py-20 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
             {% for formation in formations %}
-            <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
-                <div class="relative h-64 overflow-hidden">
+            <div class="group bg-white rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
+                <div class="relative h-56 sm:h-64 overflow-hidden">
                     {% if formation.image %}
                         <img src="{{ formation.image.url }}" alt="{{ formation.titre }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     {% else %}
                         <div class="w-full h-full bg-slate-200 flex items-center justify-center">
-                            <i class="fas fa-image text-4xl text-slate-400"></i>
+                            <i class="fas fa-image text-3xl sm:text-4xl text-slate-400"></i>
                         </div>
                     {% endif %}
-                    <div class="absolute top-4 left-4 flex gap-2">
-                        <span class="bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-primary shadow-sm">
-                            {{ formation.est_en_ligne|yesno:"E-Learning,Présentiel" }}
+                    <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-1.5 sm:gap-2">
+                        <span class="bg-white/90 backdrop-blur px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase text-primary shadow-sm">
+                            {% if formation.disponible_en_ligne and formation.disponible_presentiel %}
+                                Hybride
+                            {% elif formation.disponible_en_ligne %}
+                                En Ligne
+                            {% elif formation.disponible_presentiel %}
+                                Présentiel
+                            {% endif %}
                         </span>
-                        <span class="bg-accent/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-white shadow-sm">
+                        <span class="bg-accent/90 backdrop-blur px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase text-white shadow-sm">
                             {{ formation.niveau }}
                         </span>
                     </div>
                 </div>
-                <div class="p-8 flex flex-col flex-grow">
-                    <div class="flex items-center text-accent text-xs font-bold uppercase tracking-widest mb-3">
-                        <i class="{{ formation.categorie.icon }} mr-2"></i> {{ formation.categorie.nom }}
+                <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                    <div class="flex items-center text-accent text-xs font-bold uppercase tracking-widest mb-2 sm:mb-3">
+                        <i class="{{ formation.categorie.icon }} mr-1.5 sm:mr-2"></i> {{ formation.categorie.nom }}
                     </div>
-                    <h3 class="text-2xl font-bold mb-4 text-primary group-hover:text-accent transition-colors">{{ formation.titre }}</h3>
-                    <p class="text-slate-500 line-clamp-2 mb-6 leading-relaxed flex-grow">{{ formation.description }}</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-primary group-hover:text-accent transition-colors">{{ formation.titre }}</h3>
+                    <p class="text-sm sm:text-base text-slate-500 line-clamp-2 mb-5 sm:mb-6 leading-relaxed flex-grow">{{ formation.description }}</p>
 
-                    <div class="flex items-center space-x-4 mb-6 text-sm font-bold text-slate-400">
-                        <span class="flex items-center"><i class="far fa-clock mr-2"></i> {{ formation.duree }}</span>
-                        <span class="flex items-center"><i class="far fa-user mr-2"></i> +200 inscrits</span>
+                    <div class="flex items-center space-x-3 sm:space-x-4 mb-5 sm:mb-6 text-xs sm:text-sm font-bold text-slate-400">
+                        <span class="flex items-center"><i class="far fa-clock mr-1.5 sm:mr-2"></i> {{ formation.duree }}</span>
+                        <span class="flex items-center"><i class="far fa-user mr-1.5 sm:mr-2"></i> +200 inscrits</span>
                     </div>
 
-                    <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                    <div class="flex items-center justify-between pt-5 sm:pt-6 border-t border-slate-50">
                         <div>
                             <p class="text-[10px] text-slate-400 font-bold uppercase">Investissement</p>
-                            <span class="text-3xl font-black text-primary">{{ formation.prix }} €</span>
+                            <span class="text-2xl sm:text-3xl font-black text-primary">{{ formation.prix|floatformat:2 }} $</span>
                         </div>
-                        <a href="{% url 'formation_detail' formation.slug %}" class="bg-primary text-white px-8 py-3 rounded-2xl font-bold hover:bg-accent transition-all shadow-lg shadow-slate-900/10">
+                        <a href="{% url 'formation_detail' formation.slug %}" class="bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:bg-accent transition-all shadow-lg shadow-slate-900/10">
                             Découvrir
                         </a>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="col-span-full text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
-                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-search text-3xl text-slate-300"></i>
+            <div class="col-span-full text-center py-20 sm:py-32 bg-white rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-slate-200">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fas fa-search text-3xl sm:text-4xl text-slate-300"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-primary mb-2">Aucun résultat</h3>
-                <p class="text-slate-400">Essayez de modifier vos critères de recherche ou de catégorie.</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-primary mb-2">Aucun résultat</h3>
+                <p class="text-base sm:text-lg text-slate-400">Essayez de modifier vos critères de recherche ou de catégorie.</p>
             </div>
             {% endfor %}
         </div>
