@@ -3,60 +3,60 @@
 {% block title %}Chat Communautaire - BiliStaff{% endblock %}
 
 {% block content %}
-<section class="py-12 bg-slate-50 min-h-screen flex flex-col">
+<section class="py-12 sm:py-16 md:py-20 bg-slate-50 min-h-screen flex flex-col">
     <div class="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
-        <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[700px]">
+        <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[600px] sm:h-[700px]">
             <!-- Header du Chat -->
-            <div class="p-6 bg-primary text-white flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+            <div class="p-4 sm:p-6 bg-primary text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg">
                         <i class="fas fa-comments"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold">Chat BiliStaff</h2>
+                        <h2 class="text-lg sm:text-xl font-bold">Chat BiliStaff</h2>
                         <p class="text-xs text-blue-200">En direct avec la communauté</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+                <div class="flex items-center space-x-1.5 sm:space-x-2">
+                    <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse"></span>
                     <span class="text-xs font-bold uppercase tracking-wider">En ligne</span>
                 </div>
             </div>
 
             <!-- Zone des messages -->
-            <div id="chat-messages" class="flex-grow p-8 overflow-y-auto space-y-6 bg-slate-50/50">
+            <div id="chat-messages" class="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 bg-slate-50/50">
                 {% for msg in chat_messages %}
                     <div class="flex flex-col {% if msg.user == request.user %}items-end{% else %}items-start{% endif %}">
-                        <div class="flex items-center space-x-2 mb-1">
+                        <div class="flex items-center space-x-1.5 sm:space-x-2 mb-1">
                             <span class="text-xs font-bold text-slate-400">{{ msg.user.username }}</span>
                             <span class="text-[10px] text-slate-300">{{ msg.timestamp|date:"H:i" }}</span>
                         </div>
-                        <div class="max-w-[80%] px-6 py-3 rounded-[1.5rem] shadow-sm text-sm {% if msg.user == request.user %}bg-accent text-white rounded-tr-none{% else %}bg-white text-slate-700 border border-slate-100 rounded-tl-none{% endif %}">
+                        <div class="max-w-[80%] px-4 py-2 sm:px-6 sm:py-3 rounded-[1rem] sm:rounded-[1.5rem] shadow-sm text-sm sm:text-base {% if msg.user == request.user %}bg-accent text-white rounded-tr-none{% else %}bg-white text-slate-700 border border-slate-100 rounded-tl-none{% endif %}">
                             {{ msg.message }}
                         </div>
                     </div>
                 {% empty %}
                     <div class="flex flex-col items-center justify-center h-full text-slate-400 italic">
-                        <i class="fas fa-comment-dots text-4xl mb-4 opacity-20"></i>
-                        <p>Commencez la conversation...</p>
+                        <i class="fas fa-comment-dots text-3xl sm:text-4xl mb-3 sm:mb-4 opacity-20"></i>
+                        <p class="text-sm sm:text-base">Commencez la conversation...</p>
                     </div>
                 {% endfor %}
             </div>
 
             <!-- Formulaire d'envoi -->
-            <div class="p-6 bg-white border-t border-slate-100">
-                <form method="post" class="flex items-center space-x-4">
+            <div class="p-4 sm:p-6 bg-white border-t border-slate-100">
+                <form method="post" class="flex items-center space-x-3 sm:space-x-4">
                     {% csrf_token %}
                     <div class="flex-grow relative">
                         <input type="text" name="message" required autocomplete="off"
                             placeholder="Votre message ici..."
-                            class="w-full pl-6 pr-12 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all text-slate-700">
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300">
-                            <i class="far fa-smile text-xl cursor-pointer hover:text-accent"></i>
+                            class="w-full pl-4 pr-10 py-2.5 sm:pl-6 sm:pr-12 sm:py-4 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all text-slate-700 text-sm sm:text-base">
+                        <div class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-300">
+                            <i class="far fa-smile text-lg sm:text-xl cursor-pointer hover:text-accent"></i>
                         </div>
                     </div>
-                    <button type="submit" class="bg-primary text-white p-4 rounded-2xl hover:bg-accent transition-all shadow-xl shadow-slate-900/10">
-                        <i class="fas fa-paper-plane"></i>
+                    <button type="submit" class="bg-primary text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl hover:bg-accent transition-all shadow-xl shadow-slate-900/10">
+                        <i class="fas fa-paper-plane text-sm sm:text-base"></i>
                     </button>
                 </form>
             </div>
@@ -66,7 +66,11 @@
 
 <script>
     // Faire défiler automatiquement vers le bas
-    const chatBox = document.getElementById('chat-messages');
-    chatBox.scrollTop = chatBox.scrollHeight;
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatBox = document.getElementById('chat-messages');
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
 </script>
 {% endblock %}
