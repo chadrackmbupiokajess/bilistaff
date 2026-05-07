@@ -4,25 +4,47 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto px-4 py-8">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-primary">Conversation avec {{ other_user.username }}</h1>
-        <a href="{% url 'messages' %}" class="text-accent hover:underline flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i> Retour aux conversations
+    {# En-tête simplifié avec icône de retour #}
+    <div class="flex items-center mb-6">
+        <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors text-2xl mr-4">
+            <i class="fas fa-arrow-left"></i>
         </a>
+        <h1 class="text-2xl font-bold text-primary">{{ other_user.username }}</h1>
     </div>
 
-    {# Conteneur unique pour la conversation et le formulaire de réponse #}
-    <div class="bg-white shadow-lg rounded-lg flex flex-col h-[70vh]"> {# h-[70vh] pour une hauteur fixe et défilable #}
+    {# Conteneur pour la conversation et le formulaire de réponse - styles de carte supprimés #}
+    {# bg-transparent pour rendre le fond invisible, mais le formulaire aura son propre bg-white #}
+    <div class="flex flex-col h-[70vh] bg-transparent">
         {# Liste des messages défilable #}
-        <div class="p-6 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list">
+        <div class="p-4 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list"> {# Padding ajusté #}
             {% if messages_conversation %}
                 {% for message in messages_conversation reversed %} {# Afficher les messages du plus récent au plus ancien #}
-                    <div class="mb-4 {% if message.sender == request.user %}text-right{% else %}text-left{% endif %}">
-                        <div class="inline-block p-3 rounded-lg {% if message.sender == request.user %}bg-accent text-white{% else %}bg-gray-200 text-gray-800{% endif %} max-w-xs">
+                    <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
+                        {# Avatar de l'autre utilisateur (à gauche) #}
+                        {% if message.sender != request.user %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-2 flex-shrink-0">
+                                {{ message.sender.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+
+                        {# Bulle de message #}
+                        <div class="inline-block p-3 rounded-xl max-w-xs
+                                    {% if message.sender == request.user %}
+                                        bg-accent text-white rounded-br-none
+                                    {% else %}
+                                        bg-gray-200 text-gray-800 rounded-bl-none
+                                    {% endif %}">
                             <p class="text-sm font-semibold">{{ message.sender.username }}</p>
                             <p class="text-base mt-1">{{ message.body }}</p>
                             <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1">{{ message.timestamp|date:"H:i, d M" }}</span>
                         </div>
+
+                        {# Avatar de l'utilisateur connecté (à droite) #}
+                        {% if message.sender == request.user %}
+                            <div class="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center text-sm font-bold text-blue-700 ml-2 flex-shrink-0">
+                                {{ message.sender.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
@@ -31,7 +53,7 @@
         </div>
 
         {# Formulaire de réponse #}
-        <div class="p-6 border-t border-gray-200">
+        <div class="p-4 border-t border-gray-200 bg-white"> {# Ajout de bg-white pour le formulaire #}
             <form method="post" action="{% url 'message_detail' user_id=other_user.id %}" class="flex items-center space-x-3">
                 {% csrf_token %}
                 <textarea name="body" rows="1" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
