@@ -4,13 +4,23 @@
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 py-8">
-    {# En-tête (flèche de retour et nom d'utilisateur) supprimé #}
+<div class="max-w-3xl mx-auto px-4 py-0"> {# py-0 pour réduire le padding vertical du conteneur principal #}
+    {# En-tête compact et sticky #}
+    <div class="sticky top-0 z-10 bg-white border-b border-gray-200 py-3 flex items-center">
+        <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors text-xl mr-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        {# Avatar de l'autre utilisateur #}
+        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3 flex-shrink-0">
+            {{ other_user.username|slice:":1"|upper }}
+        </div>
+        <h1 class="text-lg font-bold text-primary">{{ other_user.username }}</h1>
+    </div>
 
     {# Conteneur pour la conversation et le formulaire de réponse #}
-    <div class="flex flex-col h-[70vh] bg-transparent">
+    {# Ajustement de la hauteur pour tenir compte de l'en-tête sticky #}
+    <div class="flex flex-col h-[calc(70vh-50px)] bg-transparent"> {# Hauteur ajustée (50px est une estimation de la hauteur de l'en-tête) #}
         {# Liste des messages défilable #}
-        {# Changé flex-col-reverse en flex-col pour un ordre chronologique naturel (plus ancien en haut, plus récent en bas) #}
         <div class="p-4 overflow-y-auto flex-grow flex flex-col" id="message-list">
             {% if messages_conversation %}
                 {# Regrouper les messages par date #}
@@ -26,7 +36,6 @@
                     </div>
 
                     {# Itérer sur les messages dans chaque groupe (du plus ancien au plus récent) #}
-                    {# Retiré le filtre 'reversed' pour un ordre chronologique naturel #}
                     {% for message in date_group.list %}
                         <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
                             {# Avatar de l'autre utilisateur (à gauche) #}
@@ -43,7 +52,6 @@
                                         {% else %}
                                             bg-gray-200 text-gray-800 rounded-bl-none
                                         {% endif %}">
-                                {# Nom de l'expéditeur supprimé de la bulle #}
                                 <p class="text-base">{{ message.body }}</p>
                                 <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1 text-right">{{ message.timestamp|date:"H\hi" }}</span> {# Affichage de l'heure exacte #}
                             </div>
