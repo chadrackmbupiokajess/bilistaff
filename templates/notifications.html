@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-primary mb-8">Mes Notifications</h1>
+
+    {% if notifications %}
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <ul>
+                {% for notification in notifications %}
+                    <li class="px-6 py-4 border-b border-slate-200 {% if not notification.read %}bg-blue-50{% endif %}">
+                        <div class="flex items-center justify-between">
+                            <p class="text-slate-700 {% if not notification.read %}font-semibold{% endif %}">
+                                {% if not notification.read %}
+                                    <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
+                                {% endif %}
+                                {{ notification.message }}
+                            </p>
+                            <span class="text-sm text-slate-500">
+                                <!-- Optionnel: ajouter une date/heure de notification ici -->
+                            </span>
+                        </div>
+                        {% if not notification.read %}
+                            <div class="mt-2 text-right">
+                                <a href="#" class="text-accent hover:underline text-sm">Marquer comme lu</a>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="bg-white shadow-lg rounded-lg p-8 text-center">
+            <p class="text-slate-600 text-lg">Vous n'avez aucune notification pour le moment.</p>
+            <i class="fas fa-bell-slash text-6xl text-slate-300 mt-6"></i>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

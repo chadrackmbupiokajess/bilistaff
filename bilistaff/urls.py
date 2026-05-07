@@ -18,7 +18,9 @@ urlpatterns = [
     path('deconnexion/', views.deconnexion, name='deconnexion'),
     path('forum/', views.forum, name='forum'),
     path('forum/<int:pk>/', views.forum_detail, name='forum_detail'),
-    path('chat/', views.chat_view, name='chat'), # Nouvelle URL pour le chat
+    path('chat/', views.chat_view, name='chat'),
+    path('notifications/', views.notifications_view, name='notifications'),
+    path('messages/', views.messages_view, name='messages'), # Nouvelle URL pour les messages
 ]
 
 if settings.DEBUG:

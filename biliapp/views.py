@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Categorie, Formation, Blog, Galerie, ForumSujet, ForumMessage, InscriptionFormation, ChatMessage
+from .models import Categorie, Formation, Blog, Galerie, ForumSujet, ForumMessage, InscriptionFormation, ChatMessage, Message # Importez le modèle Message
 
 def home(request):
     recent_formations = Formation.objects.all().order_by('-date_creation')[:3]
@@ -122,3 +122,30 @@ def deconnexion(request):
 
 def a_propos(request):
     return render(request, 'a_propos.html')
+
+@login_required
+def notifications_view(request):
+    # Ici, tu récupérerais les vraies notifications pour l'utilisateur
+    # Pour l'exemple, nous allons simuler quelques notifications
+    notifications = [
+        {'id': 1, 'message': 'Nouvelle formation disponible : Python Avancé', 'read': False},
+        {'id': 2, 'message': 'Votre inscription à "Django pour débutants" a été validée.', 'read': True},
+        {'id': 3, 'message': 'Quelqu\'un a répondu à votre sujet sur le forum.', 'read': False},
+    ]
+    
+    # Compte les notifications non lues
+    notification_count = sum(1 for n in notifications if not n['read'])
+
+    return render(request, 'notifications.html', {
+        'notifications': notifications,
+        'notification_count': notification_count
+    })
+
+@login_required
+def messages_view(request):
+    # Récupère tous les messages où l'utilisateur connecté est le destinataire
+    messages_list = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+
+    return render(request, 'messages.html', {
+        'messages_list': messages_list,
+    })

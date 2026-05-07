@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message # Importez le modèle Message
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
@@ -52,3 +52,18 @@ class ChatMessageAdmin(admin.ModelAdmin):
     list_display = ('user', 'message', 'timestamp')
     list_filter = ('user', 'timestamp')
     search_fields = ('message',)
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'recipient', 'subject', 'timestamp', 'read')
+    list_filter = ('read', 'timestamp', 'sender', 'recipient')
+    search_fields = ('subject', 'body', 'sender__username', 'recipient__username')
+    actions = ['mark_as_read', 'mark_as_unread']
+
+    def mark_as_read(self, request, queryset):
+        queryset.update(read=True)
+    mark_as_read.short_description = "Marquer les messages sélectionnés comme lus"
+
+    def mark_as_unread(self, request, queryset):
+        queryset.update(read=False)
+    mark_as_unread.short_description = "Marquer les messages sélectionnés comme non lus"

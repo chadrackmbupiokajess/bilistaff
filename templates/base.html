@@ -62,6 +62,22 @@
                 </div>
                 <div class="hidden lg:flex items-center space-x-6">
                     {% if user.is_authenticated %}
+                        <a href="{% url 'notifications' %}" class="relative text-slate-600 hover:text-accent transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            {% if notification_count > 0 %}
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    {{ notification_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'messages' %}" class="relative text-slate-600 hover:text-accent transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                            {% if message_count > 0 %}
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    {{ message_count }}
+                                </span>
+                            {% endif %}
+                        </a>
                         <span class="text-sm font-medium text-slate-500">Bonjour, <span class="text-primary font-bold">{{ user.username }}</span></span>
                         <a href="{% url 'deconnexion' %}" class="text-slate-600 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></a>
                     {% else %}
@@ -69,8 +85,30 @@
                         <a href="{% url 'inscription' %}" class="bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10">S'inscrire</a>
                     {% endif %}
                 </div>
-                <!-- Mobile menu button -->
+                <!-- Mobile menu button and icons -->
                 <div class="-mr-2 flex items-center lg:hidden">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'notifications' %}" class="text-slate-600 hover:text-accent transition-colors p-2 rounded-md">
+                            <div class="relative inline-block"> {# Conteneur relatif pour l'icône et le compteur #}
+                                <i class="fas fa-bell h-6 w-6"></i>
+                                {% if notification_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                        {{ notification_count }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors p-2 rounded-md">
+                            <div class="relative inline-block"> {# Conteneur relatif pour l'icône et le compteur #}
+                                <i class="fas fa-envelope h-6 w-6"></i>
+                                {% if message_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                        {{ message_count }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endif %}
                     <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <i class="fas fa-bars h-6 w-6"></i>
@@ -87,10 +125,10 @@
                 <a href="{% url 'galerie' %}" class="text-slate-600 hover:bg-slate-50 hover:text-primary block px-3 py-2 rounded-md text-base font-medium">Galerie</a>
                 <a href="{% url 'blog' %}" class="text-slate-600 hover:bg-slate-50 hover:text-primary block px-3 py-2 rounded-md text-base font-medium">Blog</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'forum' %}" class="text-slate-600 hover:bg-slate-50 hover:text-primary block px-3 py-2 rounded-md text-base font-medium">Forum</a>
-                <a href="{% url 'chat' %}" class="text-slate-600 hover:bg-slate-50 hover:text-primary block px-3 py-2 rounded-md text-base font-medium">Chat</a>
+                <a href="{% url 'forum' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Forum</a>
+                <a href="{% url 'chat' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">Chat</a>
                 {% endif %}
-                <a href="{% url 'a_propos' %}" class="text-slate-600 hover:bg-slate-50 hover:text-primary block px-3 py-2 rounded-md text-base font-medium">À Propos</a>
+                <a href="{% url 'a_propos' %}" class="text-slate-600 hover:text-accent font-semibold transition-colors">À Propos</a>
             </div>
             <div class="pt-4 pb-3 border-t border-slate-200">
                 {% if user.is_authenticated %}
@@ -104,6 +142,12 @@
                     </div>
                 </div>
                 <div class="mt-3 px-2 space-y-1">
+                    <a href="{% url 'notifications' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-primary">
+                        Notifications
+                    </a>
+                    <a href="{% url 'messages' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:hover:text-primary">
+                        Messages
+                    </a>
                     <a href="{% url 'deconnexion' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-primary">Déconnexion</a>
                 </div>
                 {% else %}
