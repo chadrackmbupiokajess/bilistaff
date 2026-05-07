@@ -104,8 +104,7 @@ class ChatMessage(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
-    subject = models.CharField(max_length=255, blank=True)
-    body = models.TextField()
+    body = models.TextField() # Le sujet est supprimé, le corps est le contenu principal
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
 
@@ -113,4 +112,4 @@ class Message(models.Model):
         ordering = ['-timestamp'] # Les messages les plus récents en premier
 
     def __str__(self):
-        return f"De {self.sender.username} à {self.recipient.username}: {self.subject[:50]}"
+        return f"De {self.sender.username} à {self.recipient.username}: {self.body[:50]}..." # Afficher le début du corps

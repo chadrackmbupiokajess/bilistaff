@@ -55,10 +55,14 @@ class ChatMessageAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'recipient', 'subject', 'timestamp', 'read')
+    list_display = ('sender', 'recipient', 'get_body_excerpt', 'timestamp', 'read') # 'subject' remplacé par 'get_body_excerpt'
     list_filter = ('read', 'timestamp', 'sender', 'recipient')
-    search_fields = ('subject', 'body', 'sender__username', 'recipient__username')
+    search_fields = ('body', 'sender__username', 'recipient__username') # 'subject' remplacé par 'body'
     actions = ['mark_as_read', 'mark_as_unread']
+
+    def get_body_excerpt(self, obj):
+        return obj.body[:75] + '...' if len(obj.body) > 75 else obj.body
+    get_body_excerpt.short_description = "Contenu" # Nom de la colonne dans l'admin
 
     def mark_as_read(self, request, queryset):
         queryset.update(read=True)
