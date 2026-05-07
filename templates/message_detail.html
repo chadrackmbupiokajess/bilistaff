@@ -4,10 +4,9 @@
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
 {% block content %}
-{# Le conteneur principal prend toute la hauteur disponible et utilise flexbox #}
-<div class="flex flex-col h-full max-w-3xl mx-auto">
-    {# En-tête compact et fixe en haut #}
-    <div class="flex-shrink-0 z-10 bg-white border-b border-gray-200 py-3 px-4 flex items-center">
+{# Header - Fixed at the top of the viewport #}
+<div class="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-center">
+    <div class="max-w-3xl w-full flex items-center"> {# Inner container to constrain width #}
         <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors text-xl mr-3">
             <i class="fas fa-arrow-left"></i>
         </a>
@@ -17,8 +16,12 @@
         </div>
         <h1 class="text-lg font-bold text-primary">{{ other_user.username }}</h1>
     </div>
+</div>
 
-    {# Liste des messages défilable - prend l'espace restant #}
+{# Main content area - takes up remaining space and handles scrolling #}
+{# The h-screen ensures it takes full viewport height, pt/pb create space for fixed header/footer #}
+<div class="flex flex-col h-screen pt-16 pb-24 max-w-3xl mx-auto">
+    {# Message List - now the only scrollable part within this container #}
     <div class="p-4 overflow-y-auto flex-grow flex flex-col" id="message-list">
         {% if messages_conversation %}
             {# Regrouper les messages par date #}
@@ -67,9 +70,11 @@
             <p class="text-slate-600 text-center">Aucun message dans cette conversation.</p>
         {% endif %}
     </div>
+</div>
 
-    {# Formulaire de réponse - Fixé en bas #}
-    <div class="p-4 border-t border-gray-200 bg-white relative flex-shrink-0">
+{# Formulaire de réponse - Fixed at the bottom of the viewport #}
+<div class="fixed bottom-0 left-0 right-0 z-10 p-4 border-t border-gray-200 bg-white flex justify-center">
+    <div class="max-w-3xl w-full"> {# Inner container to constrain width #}
         {# Conteneur du sélecteur d'emojis (initiallement caché) #}
         <div id="emoji-picker-container" class="absolute bottom-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg p-3 mb-2 hidden max-h-60 overflow-y-auto">
             <h3 class="text-sm font-semibold text-gray-700 mb-2">Smileys & Émotions</h3>
