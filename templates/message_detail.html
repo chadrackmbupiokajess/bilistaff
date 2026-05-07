@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load time_ago_filters %} {# Nous gardons ce load au cas où il serait utile ailleurs, mais nous n'utiliserons plus time_ago ici #}
+{% load time_ago_filters %}
 
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
@@ -16,7 +16,8 @@
     {# Conteneur pour la conversation et le formulaire de réponse #}
     <div class="flex flex-col h-[70vh] bg-transparent">
         {# Liste des messages défilable #}
-        <div class="p-4 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list">
+        {# Changé flex-col-reverse en flex-col pour un ordre chronologique naturel (plus ancien en haut, plus récent en bas) #}
+        <div class="p-4 overflow-y-auto flex-grow flex flex-col" id="message-list">
             {% if messages_conversation %}
                 {# Regrouper les messages par date #}
                 {% regroup messages_conversation by timestamp.date as messages_by_date %}
@@ -31,6 +32,7 @@
                     </div>
 
                     {# Itérer sur les messages dans chaque groupe (du plus ancien au plus récent) #}
+                    {# Retiré le filtre 'reversed' pour un ordre chronologique naturel #}
                     {% for message in date_group.list %}
                         <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
                             {# Avatar de l'autre utilisateur (à gauche) #}
@@ -67,7 +69,7 @@
         </div>
 
         {# Formulaire de réponse #}
-        <div class="p-4 border-t border-gray-200 bg-white"> {# Ajout de bg-white pour le formulaire #}
+        <div class="p-4 border-t border-gray-200 bg-white">
             <form method="post" action="{% url 'message_detail' user_id=other_user.id %}" class="flex items-center space-x-3">
                 {% csrf_token %}
                 <textarea name="body" rows="1" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
