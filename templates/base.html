@@ -160,11 +160,13 @@
         </div>
     </nav>
 
-    <main class="flex-grow">
+    <main class="flex-grow overflow-y-auto min-h-0"> {# Ajout de overflow-y-auto et min-h-0 #}
         {% block content %}
         {% endblock %}
     </main>
 
+    {# Condition pour masquer le footer sur les pages de messages #}
+    {% if request.resolver_match.url_name != 'messages' and request.resolver_match.url_name != 'message_detail' %}
     <footer class="bg-primary text-slate-300 pt-20 pb-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
@@ -229,6 +231,7 @@
             </div>
         </div>
     </footer>
+    {% endif %} {# Fin de la condition pour masquer le footer #}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
