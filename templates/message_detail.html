@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load time_ago_filters %} {# Charge notre nouveau filtre personnalisé #}
 
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
@@ -36,7 +37,7 @@
                                     {% endif %}">
                             <p class="text-sm font-semibold">{{ message.sender.username }}</p>
                             <p class="text-base mt-1">{{ message.body }}</p>
-                            <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1">{{ message.timestamp|date:"H:i, d M" }}</span>
+                            <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1">{{ message.timestamp|time_ago }}</span>
                         </div>
 
                         {# Avatar de l'utilisateur connecté (à droite) #}

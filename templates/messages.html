@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load time_ago_filters %} {# Charge notre nouveau filtre personnalisé #}
 
 {% block title %}Mes Conversations{% endblock %}
 
@@ -44,7 +45,7 @@
                                         {% endif %}
                                     </p>
                                     <span class="text-xs text-slate-500 ml-4 flex-shrink-0">
-                                        {{ conversation.latest_message.timestamp|date:"d M Y H:i" }}
+                                        {{ conversation.latest_message.timestamp|time_ago }} {# Utilisation du filtre time_ago #}
                                     </span>
                                 </div>
                                 <p class="text-sm text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
