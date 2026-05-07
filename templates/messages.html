@@ -6,38 +6,52 @@
 <div class="max-w-4xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-primary mb-8">Mes Conversations</h1>
 
+    {# Champ de recherche #}
+    <div class="mb-6">
+        <form method="get" action="{% url 'messages' %}" class="flex items-center space-x-2">
+            <input type="text" name="q" placeholder="Rechercher par expéditeur ou contenu..."
+                   class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                   value="{{ request.GET.q }}">
+            <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
+                <i class="fas fa-search"></i>
+            </button>
+            {% if request.GET.q %}
+                <a href="{% url 'messages' %}" class="px-5 py-3 bg-gray-300 text-gray-800 font-bold rounded-md hover:bg-gray-400 transition-colors">
+                    <i class="fas fa-times"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
     {% if messages_by_sender %}
         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
             <ul>
                 {% for conversation in messages_by_sender %}
-                    <li class="px-6 py-4 border-b border-slate-200 {% if conversation.unread_count > 0 %}bg-blue-50{% endif %}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-grow">
-                                <p class="text-sm text-slate-500">De: <span class="font-semibold text-primary">{{ conversation.sender.username }}</span>
-                                    {% if conversation.unread_count > 0 %}
-                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            {{ conversation.unread_count }} non lus
-                                        </span>
-                                    {% endif %}
-                                </p>
-                                <p class="text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
-                                    {% if conversation.unread_count > 0 %}
-                                        <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
-                                    {% endif %}
-                                    {{ conversation.latest_message.body|truncatechars:15 }}
-                                </p>
+                    {# Rendre toute la zone de la conversation cliquable #}
+                    <li class="border-b border-slate-200 last:border-b-0">
+                        <a href="{% url 'message_detail' user_id=conversation.sender.id %}" class="block p-6 hover:bg-gray-50 transition-colors {% if conversation.unread_count > 0 %}bg-blue-50{% endif %}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-grow">
+                                    <p class="text-sm text-slate-500">
+                                        <span class="font-semibold text-primary">{{ conversation.sender.username }}</span>
+                                        {% if conversation.unread_count > 0 %}
+                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                {{ conversation.unread_count }} non lus
+                                            </span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
+                                        {% if conversation.unread_count > 0 %}
+                                            <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
+                                        {% endif %}
+                                        {{ conversation.latest_message.body|truncatechars:15 }}
+                                    </p>
+                                </div>
+                                <span class="text-sm text-slate-500 ml-4 flex-shrink-0">
+                                    {{ conversation.latest_message.timestamp|date:"d M Y H:i" }}
+                                </span>
                             </div>
-                            <span class="text-sm text-slate-500 ml-4 flex-shrink-0">
-                                {{ conversation.latest_message.timestamp|date:"d M Y H:i" }}
-                            </span>
-                        </div>
-                        {# Pour l'instant, le lien "Marquer comme lu" marquerait tous les messages de cette conversation comme lus #}
-                        {# Cela nécessitera une vue dédiée pour gérer cette action #}
-                        {% if conversation.unread_count > 0 %}
-                            <div class="mt-2 text-right">
-                                <a href="#" class="text-accent hover:underline text-sm">Marquer comme lu</a>
-                            </div>
-                        {% endif %}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>

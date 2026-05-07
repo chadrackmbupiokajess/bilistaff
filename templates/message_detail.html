@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation avec {{ other_user.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-primary">Conversation avec {{ other_user.username }}</h1>
+        <a href="{% url 'messages' %}" class="text-accent hover:underline flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> Retour aux conversations
+        </a>
+    </div>
+
+    {# Conteneur unique pour la conversation et le formulaire de réponse #}
+    <div class="bg-white shadow-lg rounded-lg flex flex-col h-[70vh]"> {# h-[70vh] pour une hauteur fixe et défilable #}
+        {# Liste des messages défilable #}
+        <div class="p-6 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list">
+            {% if messages_conversation %}
+                {% for message in messages_conversation reversed %} {# Afficher les messages du plus récent au plus ancien #}
+                    <div class="mb-4 {% if message.sender == request.user %}text-right{% else %}text-left{% endif %}">
+                        <div class="inline-block p-3 rounded-lg {% if message.sender == request.user %}bg-accent text-white{% else %}bg-gray-200 text-gray-800{% endif %} max-w-xs">
+                            <p class="text-sm font-semibold">{{ message.sender.username }}</p>
+                            <p class="text-base mt-1">{{ message.body }}</p>
+                            <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1">{{ message.timestamp|date:"H:i, d M" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-slate-600 text-center">Aucun message dans cette conversation.</p>
+            {% endif %}
+        </div>
+
+        {# Formulaire de réponse #}
+        <div class="p-6 border-t border-gray-200">
+            <form method="post" action="{% url 'message_detail' user_id=other_user.id %}" class="flex items-center space-x-3">
+                {% csrf_token %}
+                <textarea name="body" rows="1" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
+                <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Faire défiler la liste des messages vers le bas au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageList = document.getElementById('message-list');
+        if (messageList) {
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}

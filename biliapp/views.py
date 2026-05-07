@@ -3,8 +3,9 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Max # Importez Max pour les requêtes agrégées
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message # Importez le modèle Message
+from django.db.models import Max, Q # Importez Max et Q pour les requêtes agrégées et complexes
+from django.contrib.auth.models import User # Importez le modèle User
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message 
 
 def home(request):
     recent_formations = Formation.objects.all().order_by('-date_creation')[:3]
@@ -144,33 +145,70 @@ def notifications_view(request):
 
 @login_required
 def messages_view(request):
+    search_query = request.GET.get('q')
+
     # Récupère tous les messages reçus par l'utilisateur actuel, triés par date
     all_received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
 
     # Dictionnaire pour stocker les messages groupés par expéditeur
-    # {sender_id: {'sender': User, 'latest_message': Message, 'unread_count': int}}
     grouped_messages = {}
 
     for msg in all_received_messages:
         sender_id = msg.sender.id
         if sender_id not in grouped_messages:
-            # Si c'est le premier message de cet expéditeur, c'est le plus récent
             grouped_messages[sender_id] = {
                 'sender': msg.sender,
                 'latest_message': msg,
                 'unread_count': 0
             }
-        # Incrémente le compteur de non lus si le message n'est pas lu
         if not msg.read:
             grouped_messages[sender_id]['unread_count'] += 1
 
-    # Convertit le dictionnaire en liste et trie par la date du dernier message
     messages_by_sender = sorted(
         grouped_messages.values(),
         key=lambda x: x['latest_message'].timestamp,
         reverse=True
     )
 
+    # Appliquer le filtre de recherche si une requête est présente
+    if search_query:
+        filtered_messages_by_sender = []
+        for conversation in messages_by_sender:
+            # Vérifier si le nom de l'expéditeur ou le corps du dernier message contient la requête
+            if (search_query.lower() in conversation['sender'].username.lower() or
+                search_query.lower() in conversation['latest_message'].body.lower()):
+                filtered_messages_by_sender.append(conversation)
+        messages_by_sender = filtered_messages_by_sender
+
     return render(request, 'messages.html', {
         'messages_by_sender': messages_by_sender,
+    })
+
+@login_required
+def message_detail_view(request, user_id):
+    other_user = get_object_or_404(User, pk=user_id)
+
+    # Récupérer tous les messages entre l'utilisateur connecté et other_user
+    messages_conversation = Message.objects.filter(
+        Q(sender=request.user, recipient=other_user) |
+        Q(sender=other_user, recipient=request.user)
+    ).order_by('timestamp') # Trier par ordre chronologique
+
+    # Marquer comme lus les messages reçus de cet other_user
+    Message.objects.filter(sender=other_user, recipient=request.user, read=False).update(read=True)
+
+    if request.method == 'POST':
+        body = request.POST.get('body')
+        if body:
+            Message.objects.create(
+                sender=request.user,
+                recipient=other_user,
+                body=body
+            )
+            # Rediriger pour éviter la soumission multiple du formulaire
+            return redirect('message_detail', user_id=user_id)
+
+    return render(request, 'message_detail.html', {
+        'other_user': other_user,
+        'messages_conversation': messages_conversation,
     })

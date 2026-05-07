@@ -20,7 +20,8 @@ urlpatterns = [
     path('forum/<int:pk>/', views.forum_detail, name='forum_detail'),
     path('chat/', views.chat_view, name='chat'),
     path('notifications/', views.notifications_view, name='notifications'),
-    path('messages/', views.messages_view, name='messages'), # Nouvelle URL pour les messages
+    path('messages/', views.messages_view, name='messages'),
+    path('messages/<int:user_id>/', views.message_detail_view, name='message_detail'), # Nouvelle URL pour le détail des messages
 ]
 
 if settings.DEBUG:
