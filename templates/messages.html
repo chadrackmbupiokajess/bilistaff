@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-primary mb-8">Mes Conversations</h1>
+    {# Titre "Mes Conversations" supprimé #}
 
     {# Champ de recherche #}
     <div class="mb-6">
@@ -27,29 +27,32 @@
         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
             <ul>
                 {% for conversation in messages_by_sender %}
-                    {# Rendre toute la zone de la conversation cliquable #}
                     <li class="border-b border-slate-200 last:border-b-0">
-                        <a href="{% url 'message_detail' user_id=conversation.sender.id %}" class="block p-6 hover:bg-gray-50 transition-colors {% if conversation.unread_count > 0 %}bg-blue-50{% endif %}">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-grow">
-                                    <p class="text-sm text-slate-500">
-                                        <span class="font-semibold text-primary">{{ conversation.sender.username }}</span>
+                        <a href="{% url 'message_detail' user_id=conversation.sender.id %}" class="block p-4 hover:bg-gray-50 transition-colors {% if conversation.unread_count > 0 %}bg-blue-50{% endif %} flex items-center">
+                            {# Avatar à gauche #}
+                            <div class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-700 mr-4 flex-shrink-0">
+                                {{ conversation.sender.username|slice:":1"|upper }}
+                            </div>
+
+                            <div class="flex-grow">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-base font-semibold text-primary">{{ conversation.sender.username }}
                                         {% if conversation.unread_count > 0 %}
-                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                {{ conversation.unread_count }} non lus
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                {{ conversation.unread_count }}
                                             </span>
                                         {% endif %}
                                     </p>
-                                    <p class="text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
-                                        {% if conversation.unread_count > 0 %}
-                                            <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
-                                        {% endif %}
-                                        {{ conversation.latest_message.body|truncatechars:15 }}
-                                    </p>
+                                    <span class="text-xs text-slate-500 ml-4 flex-shrink-0">
+                                        {{ conversation.latest_message.timestamp|date:"d M Y H:i" }}
+                                    </span>
                                 </div>
-                                <span class="text-sm text-slate-500 ml-4 flex-shrink-0">
-                                    {{ conversation.latest_message.timestamp|date:"d M Y H:i" }}
-                                </span>
+                                <p class="text-sm text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
+                                    {% if conversation.unread_count > 0 %}
+                                        <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
+                                    {% endif %}
+                                    {{ conversation.latest_message.body|truncatechars:30 }} {# Truncate un peu plus pour l'aperçu #}
+                                </p>
                             </div>
                         </a>
                     </li>
