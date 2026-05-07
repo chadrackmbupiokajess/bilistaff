@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load time_ago_filters %} {# Charge notre nouveau filtre personnalisé #}
+{% load time_ago_filters %} {# Nous gardons ce load au cas où il serait utile ailleurs, mais nous n'utiliserons plus time_ago ici #}
 
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
@@ -13,40 +13,53 @@
         <h1 class="text-2xl font-bold text-primary">{{ other_user.username }}</h1>
     </div>
 
-    {# Conteneur pour la conversation et le formulaire de réponse - styles de carte supprimés #}
-    {# bg-transparent pour rendre le fond invisible, mais le formulaire aura son propre bg-white #}
+    {# Conteneur pour la conversation et le formulaire de réponse #}
     <div class="flex flex-col h-[70vh] bg-transparent">
         {# Liste des messages défilable #}
-        <div class="p-4 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list"> {# Padding ajusté #}
+        <div class="p-4 overflow-y-auto flex-grow flex flex-col-reverse" id="message-list">
             {% if messages_conversation %}
-                {% for message in messages_conversation reversed %} {# Afficher les messages du plus récent au plus ancien #}
-                    <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
-                        {# Avatar de l'autre utilisateur (à gauche) #}
-                        {% if message.sender != request.user %}
-                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-2 flex-shrink-0">
-                                {{ message.sender.username|slice:":1"|upper }}
-                            </div>
-                        {% endif %}
+                {# Regrouper les messages par date #}
+                {% regroup messages_conversation by timestamp.date as messages_by_date %}
 
-                        {# Bulle de message #}
-                        <div class="inline-block p-3 rounded-xl max-w-xs
-                                    {% if message.sender == request.user %}
-                                        bg-accent text-white rounded-br-none
-                                    {% else %}
-                                        bg-gray-200 text-gray-800 rounded-bl-none
-                                    {% endif %}">
-                            <p class="text-sm font-semibold">{{ message.sender.username }}</p>
-                            <p class="text-base mt-1">{{ message.body }}</p>
-                            <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1">{{ message.timestamp|time_ago }}</span>
-                        </div>
-
-                        {# Avatar de l'utilisateur connecté (à droite) #}
-                        {% if message.sender == request.user %}
-                            <div class="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center text-sm font-bold text-blue-700 ml-2 flex-shrink-0">
-                                {{ message.sender.username|slice:":1"|upper }}
-                            </div>
-                        {% endif %}
+                {# Itérer sur les groupes de dates (du plus ancien au plus récent) #}
+                {% for date_group in messages_by_date %}
+                    {# Affichage de la date centrée AU-DESSUS du bloc de messages du jour #}
+                    <div class="text-center my-4">
+                        <span class="inline-block bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">
+                            {{ date_group.grouper|date:"D, d M Y" }}
+                        </span>
                     </div>
+
+                    {# Itérer sur les messages dans chaque groupe (du plus ancien au plus récent) #}
+                    {% for message in date_group.list %}
+                        <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
+                            {# Avatar de l'autre utilisateur (à gauche) #}
+                            {% if message.sender != request.user %}
+                                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-2 flex-shrink-0">
+                                    {{ message.sender.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+
+                            {# Bulle de message #}
+                            <div class="inline-block p-3 rounded-xl max-w-xs
+                                        {% if message.sender == request.user %}
+                                            bg-accent text-white rounded-br-none
+                                        {% else %}
+                                            bg-gray-200 text-gray-800 rounded-bl-none
+                                        {% endif %}">
+                                {# Nom de l'expéditeur supprimé de la bulle #}
+                                <p class="text-base">{{ message.body }}</p>
+                                <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1 text-right">{{ message.timestamp|date:"H\hi" }}</span> {# Affichage de l'heure exacte #}
+                            </div>
+
+                            {# Avatar de l'utilisateur connecté (à droite) #}
+                            {% if message.sender == request.user %}
+                                <div class="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center text-sm font-bold text-blue-700 ml-2 flex-shrink-0">
+                                    {{ message.sender.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
             {% else %}
                 <p class="text-slate-600 text-center">Aucun message dans cette conversation.</p>
