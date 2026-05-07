@@ -71,13 +71,99 @@
         </div>
 
         {# Formulaire de réponse #}
-        <div class="p-4 border-t border-gray-200 bg-white">
+        <div class="p-4 border-t border-gray-200 bg-white relative"> {# Ajout de relative pour positionner le picker #}
+            {# Conteneur du sélecteur d'emojis (initiallement caché) #}
+            <div id="emoji-picker-container" class="absolute bottom-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg p-3 mb-2 hidden max-h-60 overflow-y-auto">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Smileys & Émotions</h3>
+                <div class="grid grid-cols-8 gap-2 text-xl mb-4">
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😀">😀</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😂">😂</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😊">😊</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😍">😍</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🥰">🥰</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤩">🤩</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🥳">🥳</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤔">🤔</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😮">😮</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😴">😴</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😭">😭</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😡">😡</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤯">🤯</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😷">😷</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😇">😇</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😈">😈</span>
+                </div>
+
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Gestes & Personnes</h3>
+                <div class="grid grid-cols-8 gap-2 text-xl mb-4">
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👍">👍</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👎">👎</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👏">👏</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🙏">🙏</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👋">👋</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👨‍💻">👨‍💻</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👩‍🎓">👩‍🎓</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🧑‍🤝‍🧑">🧑‍🤝‍🧑</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💪">💪</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🚶">🚶</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🏃">🏃</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💃">💃</span>
+                </div>
+
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Nature & Animaux</h3>
+                <div class="grid grid-cols-8 gap-2 text-xl mb-4">
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🐶">🐶</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🐱">🐱</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🦁">🦁</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌸">🌸</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌳">🌳</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="☀️">☀️</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌧️">🌧️</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌍">🌍</span>
+                </div>
+
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Objets</h3>
+                <div class="grid grid-cols-8 gap-2 text-xl mb-4">
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💡">💡</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="📱">📱</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💻">💻</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="📚">📚</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🎁">🎁</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="⏰">⏰</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💰">💰</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🛠️">🛠️</span>
+                </div>
+
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Symboles</h3>
+                <div class="grid grid-cols-8 gap-2 text-xl">
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="❤️">❤️</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💔">💔</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="✨">✨</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🔥">🔥</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="✅">✅</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="❌">❌</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="⚠️">⚠️</span>
+                    <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💯">💯</span>
+                </div>
+            </div>
+
             <form method="post" action="{% url 'message_detail' user_id=other_user.id %}" class="flex items-center space-x-3">
                 {% csrf_token %}
-                <textarea name="body" rows="1" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
-                <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <div class="relative flex-grow"> {# Conteneur relatif pour la textarea et le bouton emoji #}
+                    <textarea name="body" id="message-textarea" rows="1" class="w-full p-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
+                    <button type="button" id="emoji-button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-600 hover:text-accent transition-colors text-xl rounded-md">
+                        <i class="fas fa-smile"></i>
+                    </button>
+                </div>
+                {# Conteneur pour les boutons d'envoi/micro #}
+                <div class="relative">
+                    <button type="submit" id="send-button" class="p-3 bg-accent text-white text-xl rounded-full hover:bg-blue-700 transition-colors hidden">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                    <button type="button" id="microphone-button" class="p-3 bg-gray-300 text-gray-800 text-xl rounded-full hover:bg-gray-400 transition-colors">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -89,6 +175,58 @@
         const messageList = document.getElementById('message-list');
         if (messageList) {
             messageList.scrollTop = messageList.scrollHeight;
+        }
+
+        // Logique JavaScript pour le sélecteur d'emojis
+        const emojiButton = document.getElementById('emoji-button');
+        const emojiPickerContainer = document.getElementById('emoji-picker-container');
+        const messageTextarea = document.getElementById('message-textarea');
+
+        if (emojiButton && emojiPickerContainer && messageTextarea) {
+            emojiButton.addEventListener('click', function(event) {
+                event.stopPropagation(); // Empêche le clic de se propager au document et de fermer le picker
+                emojiPickerContainer.classList.toggle('hidden');
+            });
+
+            emojiPickerContainer.addEventListener('click', function(event) {
+                const target = event.target;
+                if (target.tagName === 'SPAN' && target.dataset.emoji) {
+                    messageTextarea.value += target.dataset.emoji;
+                    // Optionnel: masquer le picker après sélection
+                    // emojiPickerContainer.classList.add('hidden');
+                    messageTextarea.focus(); // Remettre le focus sur la zone de texte
+                }
+            });
+
+            // Masquer le picker si on clique en dehors
+            document.addEventListener('click', function(event) {
+                if (!emojiPickerContainer.contains(event.target) && !emojiButton.contains(event.target)) {
+                    emojiPickerContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        // Logique JavaScript pour basculer entre le bouton d'envoi et le bouton microphone
+        const sendButton = document.getElementById('send-button');
+        const microphoneButton = document.getElementById('microphone-button');
+
+        if (messageTextarea && sendButton && microphoneButton) {
+            // Fonction pour basculer la visibilité
+            function toggleSendMicrophoneButton() {
+                if (messageTextarea.value.trim().length > 0) {
+                    sendButton.classList.remove('hidden');
+                    microphoneButton.classList.add('hidden');
+                } else {
+                    sendButton.classList.add('hidden');
+                    microphoneButton.classList.remove('hidden');
+                }
+            }
+
+            // Vérifier l'état initial au chargement de la page
+            toggleSendMicrophoneButton();
+
+            // Écouter les changements dans la zone de texte
+            messageTextarea.addEventListener('input', toggleSendMicrophoneButton);
         }
     });
 </script>
