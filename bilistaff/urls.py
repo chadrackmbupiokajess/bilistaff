@@ -22,6 +22,14 @@ urlpatterns = [
     path('notifications/', views.notifications_view, name='notifications'),
     path('messages/', views.messages_view, name='messages'),
     path('messages/<int:user_id>/', views.message_detail_view, name='message_detail'), # Nouvelle URL pour le détail des messages
+    
+    # URLs pour les groupes de discussion
+    path('discussion_groups/create/', views.DiscussionGroupCreateView.as_view(), name='create_discussion_group'),
+    path('discussion_groups/', views.discussion_group_list, name='discussion_group_list'),
+    path('discussion_groups/<int:pk>/', views.DiscussionGroupDetailView.as_view(), name='discussion_group_detail'), # Nouvelle URL pour le détail d'un groupe
+
+    # URL pour l'API de recherche d'utilisateurs
+    path('api/search-users/', views.search_users_api, name='search_users_api'),
 ]
 
 if settings.DEBUG:

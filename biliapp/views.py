@@ -5,7 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Max, Q # Importez Max et Q pour les requêtes agrégées et complexes
 from django.contrib.auth.models import User # Importez le modèle User
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message 
+from django.views.generic.edit import CreateView
+from django.views.generic import DetailView # Importez DetailView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+from django.http import JsonResponse # Importez JsonResponse
+
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup
+from .forms import DiscussionGroupForm # Importez le formulaire
 
 def home(request):
     recent_formations = Formation.objects.all().order_by('-date_creation')[:3]
@@ -212,3 +220,60 @@ def message_detail_view(request, user_id):
         'other_user': other_user,
         'messages_conversation': messages_conversation,
     })
+
+class DiscussionGroupCreateView(UserPassesTestMixin, CreateView):
+    model = DiscussionGroup
+    form_class = DiscussionGroupForm
+    template_name = 'biliapp/create_discussion_group.html'
+    success_url = reverse_lazy('discussion_group_list') # Rediriger vers la liste des groupes après création
+
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def form_valid(self, form):
+        form.instance.admin = self.request.user # L'utilisateur connecté est l'administrateur du groupe
+        response = super().form_valid(form)
+        
+        # Ajouter l'administrateur aux membres du groupe
+        self.object.members.add(self.request.user)
+        
+        # Ajouter les membres sélectionnés dans le formulaire
+        selected_members = form.cleaned_data.get('members')
+        if selected_members:
+            self.object.members.add(*selected_members)
+        
+        messages.success(self.request, "Le groupe de discussion a été créé avec succès.")
+        return response
+
+@login_required
+def discussion_group_list(request):
+    groups = DiscussionGroup.objects.all().order_by('name')
+    return render(request, 'biliapp/discussion_group_list.html', {'groups': groups})
+
+class DiscussionGroupDetailView(DetailView):
+    model = DiscussionGroup
+    template_name = 'biliapp/discussion_group_detail.html'
+    context_object_name = 'group'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Vous pouvez ajouter ici des données supplémentaires, comme les messages du groupe
+        # context['messages'] = self.object.group_messages.all().order_by('timestamp')
+        return context
+
+@login_required
+def search_users_api(request):
+    query = request.GET.get('q', '')
+    
+    found_users = User.objects.filter(
+        Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
+    ).exclude(id=request.user.id).values('id', 'username').order_by('username')
+    
+    # Limiter le nombre de résultats pour éviter de charger trop d'utilisateurs
+    if not query:
+        found_users = found_users[:20] # Afficher les 20 premiers utilisateurs si pas de recherche
+    else:
+        found_users = found_users[:10] # Limiter les résultats de recherche à 10
+
+    users = list(found_users)
+    return JsonResponse(users, safe=False)

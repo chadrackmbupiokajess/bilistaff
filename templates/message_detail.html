@@ -5,8 +5,8 @@
 
 {% block content %}
 {# Header - Fixed at the top of the viewport #}
-<div class="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-center">
-    <div class="max-w-3xl w-full flex items-center"> {# Inner container to constrain width #}
+<div class="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 py-3 px-4">
+    <div class="max-w-3xl mx-auto w-full flex items-center"> {# Inner container to constrain width and center #}
         <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors text-xl mr-3">
             <i class="fas fa-arrow-left"></i>
         </a>

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load time_ago_filters %}
+
+{% block title %}Discussion de Groupe: {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 class="text-3xl font-bold text-primary">{{ group.name }}</h2>
+            {# Vous pouvez ajouter des actions ici, comme modifier le groupe si l'utilisateur est admin #}
+            {% if request.user == group.admin %}
+                <a href="#" class="px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded-md hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-edit"></i> Gérer le groupe
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="mb-6">
+            <p class="text-slate-700 mb-2">{{ group.description|default:"Pas de description pour ce groupe." }}</p>
+            <div class="flex items-center text-sm text-slate-500">
+                <i class="fas fa-user-shield mr-1"></i>
+                <span class="mr-3">Admin: {{ group.admin.username }}</span>
+                <i class="fas fa-clock mr-1"></i>
+                <span>Créé: {{ group.created_at|time_ago }}</span>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-semibold text-primary mb-4">Membres du groupe ({{ group.members.count }})</h3>
+        <div class="flex flex-wrap gap-2 mb-6">
+            {% for member in group.members.all %}
+                <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                    <i class="fas fa-user mr-1"></i> {{ member.username }}
+                </span>
+            {% empty %}
+                <p class="text-slate-500">Ce groupe n'a pas encore de membres.</p>
+            {% endfor %}
+        </div>
+
+        <hr class="my-6">
+
+        <h3 class="text-xl font-semibold text-primary mb-4">Discussion</h3>
+        {# Ici, nous allons intégrer la zone de discussion #}
+        <div class="bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto mb-4">
+            <p class="text-slate-500">La zone de discussion sera implémentée ici.</p>
+            {# Exemple de message #}
+            <div class="flex items-start mb-3">
+                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3">
+                    U
+                </div>
+                <div>
+                    <p class="font-semibold text-primary">Utilisateur Test <span class="text-xs text-slate-500 ml-2">il y a 5 minutes</span></p>
+                    <p class="text-slate-800">Ceci est un message de test dans le groupe.</p>
+                </div>
+            </div>
+        </div>
+
+        {# Formulaire pour envoyer un message #}
+        <form action="#" method="post" class="flex items-center space-x-3">
+            {% csrf_token %}
+            <textarea name="message" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
+            <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
+                <i class="fas fa-paper-plane"></i> Envoyer
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

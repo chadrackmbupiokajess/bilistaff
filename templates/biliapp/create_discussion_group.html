@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %} {# Ajouté pour le filtre render_field #}
+
+{% block title %}Créer un Groupe de Discussion{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h2 class="text-3xl font-bold text-primary mb-6 text-center">Créer un nouveau Groupe de Discussion</h2>
+        <form method="post" class="space-y-6" id="createGroupForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.name.label }}</label>
+                {% render_field form.name class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" %}
+                {% if form.name.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.name.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.description.label }}</label>
+                {% render_field form.description class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" %}
+                {% if form.description.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.description.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Membres du groupe :</label>
+
+                {# Champ de recherche pour les membres #}
+                <input type="text" id="memberSearchInput" placeholder="Rechercher des utilisateurs..."
+                       class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent mb-2">
+
+                {# Zone pour afficher les résultats de la recherche #}
+                <div id="searchResults" class="border border-gray-200 rounded-md max-h-48 overflow-y-auto bg-gray-50 mb-2 hidden">
+                    {# Les résultats seront insérés ici par JavaScript #}
+                </div>
+
+                {# Zone pour afficher les membres sélectionnés #}
+                <div id="selectedMembersDisplay" class="border border-gray-200 rounded-md p-3 bg-gray-50 min-h-[50px]">
+                    <p class="text-gray-500" id="noMembersSelected">Aucun membre sélectionné.</p>
+                    {# Les membres sélectionnés seront affichés ici par JavaScript #}
+                </div>
+
+                {# Le champ original du formulaire pour les membres, qui sera mis à jour par JavaScript #}
+                {# Nous le rendons caché car le JS gérera l'interface utilisateur #}
+                <div class="hidden" id="hiddenMembersContainer">
+                    {{ form.members }}
+                </div>
+                {% if form.members.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.members.errors }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full py-3 px-4 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                Créer le Groupe
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const memberSearchInput = document.getElementById('memberSearchInput');
+        const searchResults = document.getElementById('searchResults');
+        const selectedMembersDisplay = document.getElementById('selectedMembersDisplay');
+        const noMembersSelected = document.getElementById('noMembersSelected');
+        const hiddenMembersContainer = document.getElementById('hiddenMembersContainer'); // Le div qui contient les checkboxes cachées
+
+        let selectedMemberIds = new Set(); // Pour garder une trace des IDs sélectionnés
+
+        // --- Initialisation des membres déjà sélectionnés ---
+        // On cherche toutes les checkboxes générées par Django pour le champ 'members'
+        const initialHiddenCheckboxes = hiddenMembersContainer.querySelectorAll('input[name="members"][type="checkbox"]');
+        initialHiddenCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const userId = parseInt(checkbox.value);
+                const username = checkbox.nextElementSibling ? checkbox.nextElementSibling.textContent.trim() : `User ${userId}`;
+                selectedMemberIds.add(userId);
+                addMemberToDisplay(userId, username);
+            }
+        });
+        updateNoMembersSelectedVisibility();
+
+        // --- Fonction pour créer/récupérer une checkbox cachée pour un membre ---
+        function getOrCreateHiddenCheckbox(userId, username) {
+            let checkbox = hiddenMembersContainer.querySelector(`input[name="members"][value="${userId}"]`);
+            if (!checkbox) {
+                // Si la checkbox n'existe pas, la créer dynamiquement
+                checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'members';
+                checkbox.value = userId;
+                checkbox.id = `id_members_${userId}`; // Assurez-vous d'avoir un ID unique
+                checkbox.style.display = 'none'; // La rendre cachée
+                hiddenMembersContainer.appendChild(checkbox);
+
+                // Si le label n'existe pas, le créer aussi (pour la cohérence, même s'il est caché)
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = username;
+                label.style.display = 'none';
+                hiddenMembersContainer.appendChild(label);
+            }
+            return checkbox;
+        }
+
+        // --- Fonction pour récupérer et afficher les utilisateurs ---
+        function fetchAndDisplayUsers(query = '') {
+            const url = `/api/search-users/?q=${query}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.innerHTML = ''; // Vider les résultats précédents
+                    if (data.length > 0) {
+                        searchResults.classList.remove('hidden');
+                        data.forEach(user => {
+                            const isSelected = selectedMemberIds.has(user.id);
+                            const userItem = `
+                                <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+                                    <input type="checkbox" id="search-user-${user.id}" value="${user.id}"
+                                           class="form-checkbox h-4 w-4 text-accent rounded focus:ring-accent"
+                                           ${isSelected ? 'checked' : ''}>
+                                    <label for="search-user-${user.id}" class="ml-2 text-sm text-gray-900 flex-grow">${user.username}</label>
+                                </div>
+                            `;
+                            searchResults.innerHTML += userItem;
+                        });
+                        // Attacher les écouteurs d'événements aux nouvelles checkboxes
+                        searchResults.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.addEventListener('change', handleMemberSelection);
+                        });
+                    } else {
+                        searchResults.innerHTML = '<div class="p-2 text-gray-500">Aucun utilisateur trouvé.</div>';
+                        searchResults.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la recherche des utilisateurs:', error);
+                    searchResults.innerHTML = '<div class="p-2 text-red-500">Erreur de recherche.</div>';
+                    searchResults.classList.remove('hidden');
+                });
+        }
+
+        // --- Appel initial au chargement de la page ---
+        fetchAndDisplayUsers(); // Charge tous les utilisateurs au démarrage
+
+        // --- Écouteur d'événement pour la recherche en temps réel ---
+        memberSearchInput.addEventListener('keyup', function() {
+            const query = this.value.trim();
+            // Déclenche la recherche même si la requête est vide pour réafficher la liste complète
+            // ou si la requête a au moins 1 caractère
+            if (query.length >= 0) {
+                fetchAndDisplayUsers(query);
+            }
+        });
+
+        function handleMemberSelection(event) {
+            const userId = parseInt(event.target.value);
+            const username = event.target.nextElementSibling.textContent; // Le label contient le nom d'utilisateur
+
+            if (event.target.checked) {
+                if (!selectedMemberIds.has(userId)) {
+                    selectedMemberIds.add(userId);
+                    addMemberToDisplay(userId, username);
+                }
+            } else {
+                selectedMemberIds.delete(userId);
+                removeMemberFromDisplay(userId);
+            }
+            updateHiddenMembersInput();
+            updateNoMembersSelectedVisibility();
+        }
+
+        function addMemberToDisplay(userId, username) {
+            const memberTag = `
+                <span id="selected-member-${userId}" class="inline-flex items-center bg-accent text-white text-sm font-medium px-2.5 py-0.5 rounded-full mr-2 mb-2">
+                    ${username}
+                    <button type="button" data-user-id="${userId}" data-username="${username}" class="ml-1 -mr-0.5 h-4 w-4 inline-flex items-center justify-center rounded-full hover:bg-blue-700 text-white remove-member-btn">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </span>
+            `;
+            noMembersSelected.classList.add('hidden');
+            selectedMembersDisplay.insertAdjacentHTML('beforeend', memberTag);
+            // Attacher l'écouteur d'événement au bouton de suppression
+            document.querySelector(`#selected-member-${userId} .remove-member-btn`).addEventListener('click', function() {
+                const idToRemove = parseInt(this.dataset.userId);
+                selectedMemberIds.delete(idToRemove);
+                removeMemberFromDisplay(idToRemove);
+                updateHiddenMembersInput();
+                updateNoMembersSelectedVisibility();
+                // Décocher la checkbox dans les résultats de recherche si elle est visible
+                const checkbox = document.getElementById(`search-user-${idToRemove}`);
+                if (checkbox) checkbox.checked = false;
+            });
+        }
+
+        function removeMemberFromDisplay(userId) {
+            const memberTag = document.getElementById(`selected-member-${userId}`);
+            if (memberTag) {
+                memberTag.remove();
+            }
+        }
+
+        function updateHiddenMembersInput() {
+            // Récupérer toutes les checkboxes cachées existantes
+            const allHiddenCheckboxes = hiddenMembersContainer.querySelectorAll('input[name="members"][type="checkbox"]');
+            const existingHiddenIds = new Set();
+
+            allHiddenCheckboxes.forEach(checkbox => {
+                const userId = parseInt(checkbox.value);
+                existingHiddenIds.add(userId);
+                checkbox.checked = selectedMemberIds.has(userId); // Mettre à jour l'état des checkboxes existantes
+            });
+
+            // Pour les IDs sélectionnés qui n'ont pas de checkbox cachée correspondante, en créer une
+            selectedMemberIds.forEach(id => {
+                if (!existingHiddenIds.has(id)) {
+                    getOrCreateHiddenCheckbox(id, `User ${id}`).checked = true;
+                }
+            });
+        }
+
+        function updateNoMembersSelectedVisibility() {
+            // Vérifie si selectedMembersDisplay contient uniquement le paragraphe "Aucun membre sélectionné."
+            const hasOnlyPlaceholder = selectedMembersDisplay.children.length === 1 && selectedMembersDisplay.children[0].id === 'noMembersSelected';
+
+            if (selectedMemberIds.size === 0 && !hasOnlyPlaceholder) {
+                // Si aucun membre n'est sélectionné et le placeholder n'est pas là, l'ajouter
+                selectedMembersDisplay.innerHTML = '<p class="text-gray-500" id="noMembersSelected">Aucun membre sélectionné.</p>';
+                noMembersSelected = document.getElementById('noMembersSelected'); // Ré-référence l'élément
+            } else if (selectedMemberIds.size > 0 && hasOnlyPlaceholder) {
+                // Si des membres sont sélectionnés et le placeholder est là, le cacher
+                noMembersSelected.classList.add('hidden');
+            } else if (selectedMemberIds.size === 0 && hasOnlyPlaceholder) {
+                // Si aucun membre n'est sélectionné et le placeholder est là, s'assurer qu'il est visible
+                noMembersSelected.classList.remove('hidden');
+            }
+        }
+    });
+</script>
+{% endblock %}

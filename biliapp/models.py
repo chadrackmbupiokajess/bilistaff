@@ -113,3 +113,16 @@ class Message(models.Model):
 
     def __str__(self):
         return f"De {self.sender.username} à {self.recipient.username}: {self.body[:50]}..." # Afficher le début du corps
+
+class DiscussionGroup(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    description = models.TextField(blank=True, null=True)
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_groups')
+    members = models.ManyToManyField(User, related_name='discussion_groups')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

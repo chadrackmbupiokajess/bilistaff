@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'biliapp',
+    'widget_tweaks', # <-- Ajouté ici
 ]
 
 MIDDLEWARE = [
@@ -116,7 +117,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# https://docs.djangoproject.com/en/5.2/ref/settings/#static-files/
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if os.path.exists(BASE_DIR / 'static') else []

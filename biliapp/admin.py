@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message # Importez le modèle Message
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup # Importez le modèle DiscussionGroup
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
@@ -71,3 +71,10 @@ class MessageAdmin(admin.ModelAdmin):
     def mark_as_unread(self, request, queryset):
         queryset.update(read=False)
     mark_as_unread.short_description = "Marquer les messages sélectionnés comme non lus"
+
+@admin.register(DiscussionGroup)
+class DiscussionGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'admin', 'created_at')
+    list_filter = ('admin', 'created_at')
+    search_fields = ('name', 'description')
+    filter_horizontal = ('members',) # Permet une meilleure gestion des ManyToMany dans l'admin
