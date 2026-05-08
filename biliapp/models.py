@@ -66,7 +66,7 @@ class Blog(models.Model):
         return self.titre
 
 class Galerie(models.Model):
-    image = models.ImageField(upload_to='galerie/')
+    image = models.ImageField(upload_to='galerie/', blank=True, null=True) # Ajout de blank=True, null=True
     description = models.CharField(max_length=200, blank=True)
     date_ajout = models.DateTimeField(auto_now_add=True)
 
@@ -130,7 +130,8 @@ class DiscussionGroup(models.Model):
 class GroupMessage(models.Model):
     group = models.ForeignKey(DiscussionGroup, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(blank=True, null=True) # Le message peut être vide si c'est juste une pièce jointe
+    attachment = models.FileField(upload_to='group_attachments/', blank=True, null=True) # Nouveau champ pour les pièces jointes
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
