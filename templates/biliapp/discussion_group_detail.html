@@ -40,30 +40,56 @@
         <hr class="my-6">
 
         <h3 class="text-xl font-semibold text-primary mb-4">Discussion</h3>
-        {# Ici, nous allons intégrer la zone de discussion #}
-        <div class="bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto mb-4">
-            <p class="text-slate-500">La zone de discussion sera implémentée ici.</p>
-            {# Exemple de message #}
-            <div class="flex items-start mb-3">
-                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3">
-                    U
-                </div>
-                <div>
-                    <p class="font-semibold text-primary">Utilisateur Test <span class="text-xs text-slate-500 ml-2">il y a 5 minutes</span></p>
-                    <p class="text-slate-800">Ceci est un message de test dans le groupe.</p>
-                </div>
-            </div>
+        <div id="chat-box" class="bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto mb-4 flex flex-col-reverse">
+            {% if group_messages %}
+                {% for message in group_messages %}
+                    <div class="flex items-start mb-3 {% if message.sender == request.user %}justify-end{% endif %}">
+                        {% if message.sender != request.user %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3 flex-shrink-0">
+                                {{ message.sender.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="{% if message.sender == request.user %}bg-accent text-white rounded-bl-lg{% else %}bg-white text-gray-800 rounded-br-lg{% endif %} p-3 rounded-t-lg shadow-sm max-w-[70%]">
+                            <p class="font-semibold text-sm {% if message.sender == request.user %}text-white{% else %}text-primary{% endif %} mb-1">
+                                {% if message.sender == request.user %}Vous{% else %}{{ message.sender.username }}{% endif %}
+                                <span class="text-xs {% if message.sender == request.user %}text-blue-200{% else %}text-slate-500{% endif %} ml-2">{{ message.timestamp|time_ago }}</span>
+                            </p>
+                            <p class="text-sm">{{ message.content }}</p>
+                        </div>
+                        {% if message.sender == request.user %}
+                            <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-sm font-bold text-white ml-3 flex-shrink-0">
+                                {{ message.sender.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-slate-500 text-center">Aucun message dans ce groupe pour le moment.</p>
+            {% endif %}
         </div>
 
         {# Formulaire pour envoyer un message #}
-        <form action="#" method="post" class="flex items-center space-x-3">
-            {% csrf_token %}
-            <textarea name="message" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
-            <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
-                <i class="fas fa-paper-plane"></i> Envoyer
-            </button>
-        </form>
-
+        {% if request.user in group.members.all %}
+            <form action="{% url 'discussion_group_detail' pk=group.pk %}" method="post" class="flex items-center space-x-3">
+                {% csrf_token %}
+                <textarea name="message" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
+                <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-paper-plane"></i> Envoyer
+                </button>
+            </form>
+        {% else %}
+            <p class="text-red-500 text-center">Vous devez être membre de ce groupe pour envoyer un message.</p>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    // Faire défiler la boîte de discussion vers le bas au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+</script>
 {% endblock %}

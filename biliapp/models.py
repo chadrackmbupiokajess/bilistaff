@@ -126,3 +126,15 @@ class DiscussionGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+class GroupMessage(models.Model):
+    group = models.ForeignKey(DiscussionGroup, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"Message in {self.group.name} by {self.sender.username} at {self.timestamp.strftime('%H:%M')}"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup # Importez le modèle DiscussionGroup
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup, GroupMessage # Importez le modèle GroupMessage
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
@@ -78,3 +78,9 @@ class DiscussionGroupAdmin(admin.ModelAdmin):
     list_filter = ('admin', 'created_at')
     search_fields = ('name', 'description')
     filter_horizontal = ('members',) # Permet une meilleure gestion des ManyToMany dans l'admin
+
+@admin.register(GroupMessage)
+class GroupMessageAdmin(admin.ModelAdmin):
+    list_display = ('group', 'sender', 'content', 'timestamp')
+    list_filter = ('group', 'sender', 'timestamp')
+    search_fields = ('group__name', 'sender__username', 'content')

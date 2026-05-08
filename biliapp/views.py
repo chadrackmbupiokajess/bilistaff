@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 from django.http import JsonResponse # Importez JsonResponse
 
-from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup
+from .models import Categorie, Formation, InscriptionFormation, Blog, Galerie, ForumSujet, ForumMessage, ChatMessage, Message, DiscussionGroup, GroupMessage
 from .forms import DiscussionGroupForm # Importez le formulaire
 
 def home(request):
@@ -178,18 +178,66 @@ def messages_view(request):
         reverse=True
     )
 
+    # Récupérer les groupes de discussion dont l'utilisateur est membre
+    user_groups = request.user.discussion_groups.all()
+    group_conversations = []
+    for group in user_groups:
+        latest_group_message = group.messages.order_by('-timestamp').first()
+        if latest_group_message:
+            group_conversations.append({
+                'group': group,
+                'latest_message': latest_group_message,
+                # Pour les groupes, on ne gère pas de "non lus" de la même manière que les messages privés
+                # On pourrait ajouter une logique plus tard si nécessaire
+                'unread_count': 0 
+            })
+        else:
+            group_conversations.append({
+                'group': group,
+                'latest_message': None,
+                'unread_count': 0
+            })
+    
+    # Combiner les messages privés et les groupes pour l'affichage
+    all_conversations = []
+    for conv in messages_by_sender:
+        all_conversations.append({
+            'type': 'private',
+            'id': conv['sender'].id,
+            'name': conv['sender'].username,
+            'latest_message_body': conv['latest_message'].body,
+            'latest_message_timestamp': conv['latest_message'].timestamp,
+            'unread_count': conv['unread_count'],
+            'sender_object': conv['sender']
+        })
+
+    for conv in group_conversations:
+        all_conversations.append({
+            'type': 'group',
+            'id': conv['group'].id,
+            'name': conv['group'].name,
+            'latest_message_body': conv['latest_message'].content if conv['latest_message'] else "Aucun message",
+            'latest_message_timestamp': conv['latest_message'].timestamp if conv['latest_message'] else conv['group'].created_at,
+            'unread_count': conv['unread_count'],
+            'group_object': conv['group']
+        })
+
+    # Trier toutes les conversations par le timestamp du dernier message
+    all_conversations.sort(key=lambda x: x['latest_message_timestamp'], reverse=True)
+
+
     # Appliquer le filtre de recherche si une requête est présente
     if search_query:
-        filtered_messages_by_sender = []
-        for conversation in messages_by_sender:
-            # Vérifier si le nom de l'expéditeur ou le corps du dernier message contient la requête
-            if (search_query.lower() in conversation['sender'].username.lower() or
-                search_query.lower() in conversation['latest_message'].body.lower()):
-                filtered_messages_by_sender.append(conversation)
-        messages_by_sender = filtered_messages_by_sender
+        filtered_all_conversations = []
+        for conversation in all_conversations:
+            if search_query.lower() in conversation['name'].lower() or \
+               search_query.lower() in conversation['latest_message_body'].lower():
+                filtered_all_conversations.append(conversation)
+        all_conversations = filtered_all_conversations
+
 
     return render(request, 'messages.html', {
-        'messages_by_sender': messages_by_sender,
+        'all_conversations': all_conversations,
     })
 
 @login_required
@@ -257,18 +305,33 @@ class DiscussionGroupDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Vous pouvez ajouter ici des données supplémentaires, comme les messages du groupe
-        # context['messages'] = self.object.group_messages.all().order_by('timestamp')
+        context['group_messages'] = self.object.messages.all().order_by('timestamp')
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        content = request.POST.get('message')
+        if content and request.user.is_authenticated:
+            # Vérifier si l'utilisateur est membre du groupe avant de poster
+            if request.user in self.object.members.all():
+                GroupMessage.objects.create(
+                    group=self.object,
+                    sender=request.user,
+                    content=content
+                )
+                return redirect('discussion_group_detail', pk=self.object.pk)
+            else:
+                messages.error(request, "Vous devez être membre de ce groupe pour envoyer un message.")
+        return self.get(request, *args, **kwargs) # Re-render la page avec les messages et erreurs
 
 @login_required
 def search_users_api(request):
     query = request.GET.get('q', '')
-    
+
     found_users = User.objects.filter(
         Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
     ).exclude(id=request.user.id).values('id', 'username').order_by('username')
-    
+
     # Limiter le nombre de résultats pour éviter de charger trop d'utilisateurs
     if not query:
         found_users = found_users[:20] # Afficher les 20 premiers utilisateurs si pas de recherche
