@@ -1,46 +1,59 @@
 {% extends 'base.html' %}
 {% load time_ago_filters %}
-{% load static %} {# Pour charger les fichiers statiques si besoin, par exemple pour les icônes #}
+{% load static %}
 
 {% block title %}Discussion de Groupe: {{ group.name }}{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <div class="flex justify-between items-center mb-6 border-b pb-4">
-            <h2 class="text-3xl font-bold text-primary">{{ group.name }}</h2>
-            {# Vous pouvez ajouter des actions ici, comme modifier le groupe si l'utilisateur est admin #}
+        {# Nouvelle en-tête de groupe avec bouton retour, avatar et nom #}
+        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
+            <a href="{% url 'discussion_group_list' %}" class="text-gray-600 hover:text-accent transition-colors mr-4">
+                <i class="fas fa-arrow-left text-2xl"></i>
+            </a>
+            <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-xl font-bold text-white mr-3 flex-shrink-0">
+                {{ group.name|slice:":1"|upper }}
+            </div>
+            <h2 class="text-3xl font-bold text-primary flex-grow">{{ group.name }}</h2>
+
+            {# Bouton pour afficher/masquer les détails du groupe #}
+            <button type="button" id="toggleGroupDetails" class="p-2 text-gray-500 hover:text-accent transition-colors ml-4" title="Afficher les détails du groupe">
+                <i class="fas fa-ellipsis-h text-xl"></i>
+            </button>
+
+            {# Actions du groupe (ex: gérer le groupe) - peut-être déplacer ceci dans les détails cachés ou un menu déroulant #}
+            {# For now, keep it separate, or integrate into the details section if it's admin-only info #}
             {% if request.user == group.admin %}
-                <a href="#" class="px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded-md hover:bg-gray-300 transition-colors">
-                    <i class="fas fa-edit"></i> Gérer le groupe
+                <a href="#" class="px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded-md hover:bg-gray-300 transition-colors ml-2">
+                    <i class="fas fa-edit"></i> Gérer
                 </a>
             {% endif %}
         </div>
 
-        <div class="mb-6">
-            <p class="text-slate-700 mb-2">{{ group.description|default:"Pas de description pour ce groupe." }}</p>
-            <div class="flex items-center text-sm text-slate-500">
+        {# Section des détails du groupe (cachée par défaut) #}
+        <div id="groupDetailsContent" class="hidden mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p class="text-slate-700 mb-2"><strong>Description:</strong> {{ group.description|default:"Pas de description pour ce groupe." }}</p>
+            <div class="flex items-center text-sm text-slate-500 mb-2">
                 <i class="fas fa-user-shield mr-1"></i>
                 <span class="mr-3">Admin: {{ group.admin.username }}</span>
                 <i class="fas fa-clock mr-1"></i>
                 <span>Créé: {{ group.created_at|time_ago }}</span>
             </div>
+
+            <h4 class="text-lg font-semibold text-primary mb-2">Membres du groupe ({{ group.members.count }})</h4>
+            <div class="flex flex-wrap gap-2">
+                {% for member in group.members.all %}
+                    <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                        <i class="fas fa-user mr-1"></i> {{ member.username }}
+                    </span>
+                {% empty %}
+                    <p class="text-slate-500">Ce groupe n'a pas encore de membres.</p>
+                {% endfor %}
+            </div>
         </div>
 
-        <h3 class="text-xl font-semibold text-primary mb-4">Membres du groupe ({{ group.members.count }})</h3>
-        <div class="flex flex-wrap gap-2 mb-6">
-            {% for member in group.members.all %}
-                <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
-                    <i class="fas fa-user mr-1"></i> {{ member.username }}
-                </span>
-            {% empty %}
-                <p class="text-slate-500">Ce groupe n'a pas encore de membres.</p>
-            {% endfor %}
-        </div>
 
-        <hr class="my-6">
-
-        <h3 class="text-xl font-semibold text-primary mb-4">Discussion</h3>
         <div id="chat-box" class="bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto mb-4 flex flex-col-reverse">
             {% if group_messages %}
                 {% for message in group_messages %}
@@ -123,14 +136,14 @@
 </div>
 
 <script>
-    // Faire défiler la boîte de discussion vers le bas au chargement
     document.addEventListener('DOMContentLoaded', function() {
         const chatBox = document.getElementById('chat-box');
         if (chatBox) {
-            chatBox.scrollTop = chatBox.scrollHeight;
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
         }
 
-        // Gérer la sélection de fichier pour la pièce jointe
         const attachmentInput = document.getElementById('attachment-input');
         const selectedFileNameDisplay = document.getElementById('selected-file-name');
         const messageInput = document.getElementById('message-input');
@@ -139,22 +152,30 @@
             if (this.files.length > 0) {
                 selectedFileNameDisplay.textContent = `Fichier sélectionné : ${this.files[0].name}`;
                 selectedFileNameDisplay.classList.remove('hidden');
-                // Si un fichier est sélectionné, le champ message n'est pas obligatoire
                 messageInput.removeAttribute('required');
             } else {
                 selectedFileNameDisplay.textContent = '';
                 selectedFileNameDisplay.classList.add('hidden');
-                // Si aucun fichier, le champ message redevient obligatoire (si pas de contenu)
-                // Note: La validation finale se fera côté serveur
-                messageInput.setAttribute('required', 'required');
             }
         });
 
-        // Ajuster la hauteur du textarea automatiquement
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
+
+        // --- Nouvelle logique pour le bouton "..." ---
+        const toggleGroupDetailsButton = document.getElementById('toggleGroupDetails');
+        const groupDetailsContent = document.getElementById('groupDetailsContent');
+
+        if (toggleGroupDetailsButton && groupDetailsContent) {
+            toggleGroupDetailsButton.addEventListener('click', function() {
+                groupDetailsContent.classList.toggle('hidden');
+                // Optionnel: changer l'icône du bouton si vous voulez indiquer l'état
+                // this.querySelector('i').classList.toggle('fa-ellipsis-h');
+                // this.querySelector('i').classList.toggle('fa-times'); // ou une flèche vers le haut/bas
+            });
+        }
     });
 </script>
 {% endblock %}

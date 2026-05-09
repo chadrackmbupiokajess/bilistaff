@@ -78,6 +78,11 @@
                                 </span>
                             {% endif %}
                         </a>
+                        {% if user.is_staff or user.is_superuser %}
+                            <a href="{% url 'create_discussion_group' %}" class="text-slate-600 hover:text-accent transition-colors" title="Créer un groupe de discussion">
+                                <i class="fas fa-plus-circle text-xl"></i>
+                            </a>
+                        {% endif %}
                         <span class="text-sm font-medium text-slate-500">Bonjour, <span class="text-primary font-bold">{{ user.username }}</span></span>
                         <a href="{% url 'deconnexion' %}" class="text-slate-600 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></a>
                     {% else %}
@@ -148,6 +153,12 @@
                     <a href="{% url 'messages' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:hover:text-primary">
                         Messages
                     </a>
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'create_discussion_group' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-primary flex items-center space-x-2">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Créer un groupe</span>
+                        </a>
+                    {% endif %}
                     <a href="{% url 'deconnexion' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-primary">Déconnexion</a>
                 </div>
                 {% else %}
@@ -165,8 +176,8 @@
         {% endblock %}
     </main>
 
-    {# Condition pour masquer le footer sur les pages de messages #}
-    {% if request.resolver_match.url_name != 'messages' and request.resolver_match.url_name != 'message_detail' %}
+    {# Condition pour masquer le footer sur les pages de messages et de détail de groupe #}
+    {% if request.resolver_match.url_name != 'messages' and request.resolver_match.url_name != 'message_detail' and request.resolver_match.url_name != 'discussion_group_detail' %}
     <footer class="bg-primary text-slate-300 pt-20 pb-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
