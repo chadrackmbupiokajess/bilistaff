@@ -154,13 +154,13 @@ def notifications_view(request):
 @login_required
 def messages_view(request):
     search_query = request.GET.get('q')
-    filter_type = request.GET.get('filter') # Nouveau paramètre de filtre
+    filter_type = request.GET.get('filter', 'all') # Default to 'all'
 
     all_conversations = []
 
-    # Récupérer les groupes de discussion dont l'utilisateur est membre
-    user_groups = request.user.discussion_groups.all()
+    # --- Handle Group Conversations ---
     group_conversations = []
+    user_groups = request.user.discussion_groups.all()
     for group in user_groups:
         latest_group_message = group.messages.order_by('-timestamp').first()
         group_conversations.append({
@@ -169,16 +169,16 @@ def messages_view(request):
             'name': group.name,
             'latest_message_body': latest_group_message.content if latest_group_message else "Aucun message",
             'latest_message_timestamp': latest_group_message.timestamp if latest_group_message else group.created_at,
-            'unread_count': 0, # Pas de gestion des non lus pour les groupes pour l'instant
+            'unread_count': 0,
             'group_object': group
         })
     
-    # Ajouter les groupes aux conversations si le filtre n'est pas 'private'
-    if filter_type != 'private':
+    if filter_type in ['all', 'groups']:
         all_conversations.extend(group_conversations)
 
-    # Récupérer les messages privés si le filtre n'est pas 'groups'
-    if filter_type != 'groups':
+    # --- Handle Private Conversations ---
+    private_conversations = []
+    if filter_type in ['all', 'private']:
         all_received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
         grouped_messages = {}
         for msg in all_received_messages:
@@ -199,7 +199,7 @@ def messages_view(request):
         )
 
         for conv in messages_by_sender:
-            all_conversations.append({
+            private_conversations.append({
                 'type': 'private',
                 'id': conv['sender'].id,
                 'name': conv['sender'].username,
@@ -208,11 +208,12 @@ def messages_view(request):
                 'unread_count': conv['unread_count'],
                 'sender_object': conv['sender']
             })
+        all_conversations.extend(private_conversations)
 
-    # Trier toutes les conversations par le timestamp du dernier message
+    # Sort all conversations by the latest message timestamp
     all_conversations.sort(key=lambda x: x['latest_message_timestamp'], reverse=True)
 
-    # Appliquer le filtre de recherche si une requête est présente
+    # Apply search filter if a query is present
     if search_query:
         filtered_all_conversations = []
         for conversation in all_conversations:
