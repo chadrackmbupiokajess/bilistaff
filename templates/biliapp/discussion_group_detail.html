@@ -5,10 +5,11 @@
 {% block title %}Discussion de Groupe: {{ group.name }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-4 sm:py-8"> {# Ajustement du padding vertical pour mobile #}
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 sm:p-6"> {# Ajustement du padding pour mobile #}
+<div class="container mx-auto px-0 sm:px-4 py-4 sm:py-8"> {# Ajustement du padding horizontal pour mobile à 0 #}
+    {# La carte principale est maintenant transparente, sans ombre ni bordures sur mobile #}
+    <div class="max-w-4xl mx-auto p-0 sm:p-6"> {# Padding à 0 sur mobile, padding sur sm: #}
         {# Nouvelle en-tête de groupe avec bouton retour, avatar et nom #}
-        <div class="flex items-center mb-4 pb-3 sm:mb-6 sm:pb-4 border-b border-gray-200">
+        <div class="flex items-center mb-4 pb-3 sm:mb-6 sm:pb-4 border-b border-gray-200 bg-white sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none shadow-md sm:shadow-none"> {# Ajout de bg-white et shadow sur mobile pour l'en-tête #}
             <a href="{% url 'messages' %}" class="text-gray-600 hover:text-accent transition-colors mr-2 sm:mr-4"> {# Changé l'URL de retour ici #}
                 <i class="fas fa-arrow-left text-xl sm:text-2xl"></i> {# Taille d'icône responsive #}
             </a>
@@ -31,7 +32,8 @@
         </div>
 
         {# Section des détails du groupe (cachée par défaut) #}
-        <div id="groupDetailsContent" class="hidden mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200"> {# Padding responsive #}
+        {# Cette section aura son propre fond blanc et ombre pour la distinguer #}
+        <div id="groupDetailsContent" class="hidden mb-4 sm:mb-6 p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm"> {# Padding responsive #}
             <p class="text-sm sm:text-base text-slate-700 mb-2"><strong>Description:</strong> {{ group.description|default:"Pas de description pour ce groupe." }}</p>
             <div class="flex items-center text-xs sm:text-sm text-slate-500 mb-2"> {# Taille de texte responsive #}
                 <i class="fas fa-user-shield mr-1"></i>
@@ -54,7 +56,7 @@
 
         <hr class="my-4 sm:my-6"> {# Marge responsive #}
 
-        <h3 class="text-lg sm:text-xl font-semibold text-primary mb-3 sm:mb-4">Discussion</h3> {# Taille de titre responsive #}
+        <h3 class="text-lg sm:text-xl font-semibold text-primary mb-3 sm:mb-4 px-3 sm:px-0">Discussion</h3> {# Taille de titre responsive, ajout de px pour mobile #}
         <div id="chat-box" class="bg-gray-100 p-3 sm:p-4 rounded-lg max-h-80 sm:max-h-96 overflow-y-auto mb-3 sm:mb-4 flex flex-col-reverse"> {# Padding et hauteur responsive #}
             {% if group_messages %}
                 {% for message in group_messages %}
