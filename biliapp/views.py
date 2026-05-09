@@ -310,24 +310,31 @@ class DiscussionGroupDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        
+        # Vérifier si l'utilisateur est membre du groupe avant de poster
+        if not request.user.is_authenticated or request.user not in self.object.members.all():
+            messages.error(request, "Vous devez être membre de ce groupe pour envoyer un message.")
+            return self.get(request, *args, **kwargs)
+
         content = request.POST.get('message')
-        if content and request.user.is_authenticated:
-            # Vérifier si l'utilisateur est membre du groupe avant de poster
-            if request.user in self.object.members.all():
-                GroupMessage.objects.create(
-                    group=self.object,
-                    sender=request.user,
-                    content=content
-                )
-                return redirect('discussion_group_detail', pk=self.object.pk)
-            else:
-                messages.error(request, "Vous devez être membre de ce groupe pour envoyer un message.")
-        return self.get(request, *args, **kwargs) # Re-render la page avec les messages et erreurs
+        attachment = request.FILES.get('attachment') # Récupérer le fichier
+
+        if content or attachment: # Un message doit avoir du contenu ou une pièce jointe
+            GroupMessage.objects.create(
+                group=self.object,
+                sender=request.user,
+                content=content,
+                attachment=attachment # Enregistrer la pièce jointe
+            )
+            return redirect('discussion_group_detail', pk=self.object.pk)
+        else:
+            messages.error(request, "Le message ne peut pas être vide.")
+            return self.get(request, *args, **kwargs) # Re-render la page avec les messages et erreurs
 
 @login_required
 def search_users_api(request):
     query = request.GET.get('q', '')
-
+    
     found_users = User.objects.filter(
         Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
     ).exclude(id=request.user.id).values('id', 'username').order_by('username')

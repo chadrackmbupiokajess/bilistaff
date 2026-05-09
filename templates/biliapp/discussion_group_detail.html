@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load time_ago_filters %}
+{% load static %} {# Pour charger les fichiers statiques si besoin, par exemple pour les icônes #}
 
 {% block title %}Discussion de Groupe: {{ group.name }}{% endblock %}
 
@@ -54,7 +55,24 @@
                                 {% if message.sender == request.user %}Vous{% else %}{{ message.sender.username }}{% endif %}
                                 <span class="text-xs {% if message.sender == request.user %}text-blue-200{% else %}text-slate-500{% endif %} ml-2">{{ message.timestamp|time_ago }}</span>
                             </p>
-                            <p class="text-sm">{{ message.content }}</p>
+                            {% if message.content %}
+                                <p class="text-sm">{{ message.content }}</p>
+                            {% endif %}
+                            {% if message.attachment %}
+                                <div class="mt-2">
+                                    {% if message.attachment.url|lower|slice:"-4:" == ".jpg" or message.attachment.url|lower|slice:"-4:" == ".png" or message.attachment.url|lower|slice:"-5:" == ".jpeg" or message.attachment.url|lower|slice:"-4:" == ".gif" %}
+                                        <img src="{{ message.attachment.url }}" alt="Pièce jointe" class="max-w-full h-auto rounded-md">
+                                    {% elif message.attachment.url|lower|slice:"-4:" == ".mp3" or message.attachment.url|lower|slice:"-4:" == ".wav" %}
+                                        <audio controls src="{{ message.attachment.url }}" class="w-full"></audio>
+                                    {% elif message.attachment.url|lower|slice:"-4:" == ".mp4" or message.attachment.url|lower|slice:"-4:" == ".mov" %}
+                                        <video controls src="{{ message.attachment.url }}" class="max-w-full h-auto rounded-md"></video>
+                                    {% else %}
+                                        <a href="{{ message.attachment.url }}" target="_blank" class="text-sm underline {% if message.sender == request.user %}text-blue-200{% else %}text-accent{% endif %}">
+                                            <i class="fas fa-file-download mr-1"></i> Télécharger: {{ message.attachment.name|cut:"group_attachments/" }}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                         {% if message.sender == request.user %}
                             <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-sm font-bold text-white ml-3 flex-shrink-0">
@@ -70,12 +88,33 @@
 
         {# Formulaire pour envoyer un message #}
         {% if request.user in group.members.all %}
-            <form action="{% url 'discussion_group_detail' pk=group.pk %}" method="post" class="flex items-center space-x-3">
+            <form action="{% url 'discussion_group_detail' pk=group.pk %}" method="post" enctype="multipart/form-data" class="flex flex-col space-y-2">
                 {% csrf_token %}
-                <textarea name="message" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
-                <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-paper-plane"></i> Envoyer
-                </button>
+                <div class="flex items-center space-x-2">
+                    {# Bouton Emoji (placeholder) #}
+                    <button type="button" class="p-2 text-gray-500 hover:text-accent transition-colors" title="Ajouter un emoji">
+                        <i class="fas fa-smile text-xl"></i>
+                    </button>
+
+                    {# Bouton Voix (placeholder) #}
+                    <button type="button" class="p-2 text-gray-500 hover:text-accent transition-colors" title="Envoyer un message vocal">
+                        <i class="fas fa-microphone text-xl"></i>
+                    </button>
+
+                    {# Bouton Pièce jointe #}
+                    <label for="attachment-input" class="p-2 text-gray-500 hover:text-accent transition-colors cursor-pointer" title="Joindre un fichier">
+                        <i class="fas fa-paperclip text-xl"></i>
+                    </label>
+                    <input type="file" id="attachment-input" name="attachment" class="hidden">
+
+                    <textarea name="message" id="message-input" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
+
+                    <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-paper-plane"></i> Envoyer
+                    </button>
+                </div>
+                {# Affichage du nom du fichier sélectionné #}
+                <div id="selected-file-name" class="text-sm text-gray-600 ml-12 hidden"></div>
             </form>
         {% else %}
             <p class="text-red-500 text-center">Vous devez être membre de ce groupe pour envoyer un message.</p>
@@ -90,6 +129,32 @@
         if (chatBox) {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        // Gérer la sélection de fichier pour la pièce jointe
+        const attachmentInput = document.getElementById('attachment-input');
+        const selectedFileNameDisplay = document.getElementById('selected-file-name');
+        const messageInput = document.getElementById('message-input');
+
+        attachmentInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                selectedFileNameDisplay.textContent = `Fichier sélectionné : ${this.files[0].name}`;
+                selectedFileNameDisplay.classList.remove('hidden');
+                // Si un fichier est sélectionné, le champ message n'est pas obligatoire
+                messageInput.removeAttribute('required');
+            } else {
+                selectedFileNameDisplay.textContent = '';
+                selectedFileNameDisplay.classList.add('hidden');
+                // Si aucun fichier, le champ message redevient obligatoire (si pas de contenu)
+                // Note: La validation finale se fera côté serveur
+                messageInput.setAttribute('required', 'required');
+            }
+        });
+
+        // Ajuster la hauteur du textarea automatiquement
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
     });
 </script>
 {% endblock %}
