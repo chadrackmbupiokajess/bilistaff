@@ -154,77 +154,63 @@ def notifications_view(request):
 @login_required
 def messages_view(request):
     search_query = request.GET.get('q')
+    filter_type = request.GET.get('filter') # Nouveau paramètre de filtre
 
-    # Récupère tous les messages reçus par l'utilisateur actuel, triés par date
-    all_received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
-
-    # Dictionnaire pour stocker les messages groupés par expéditeur
-    grouped_messages = {}
-
-    for msg in all_received_messages:
-        sender_id = msg.sender.id
-        if sender_id not in grouped_messages:
-            grouped_messages[sender_id] = {
-                'sender': msg.sender,
-                'latest_message': msg,
-                'unread_count': 0
-            }
-        if not msg.read:
-            grouped_messages[sender_id]['unread_count'] += 1
-
-    messages_by_sender = sorted(
-        grouped_messages.values(),
-        key=lambda x: x['latest_message'].timestamp,
-        reverse=True
-    )
+    all_conversations = []
 
     # Récupérer les groupes de discussion dont l'utilisateur est membre
     user_groups = request.user.discussion_groups.all()
     group_conversations = []
     for group in user_groups:
         latest_group_message = group.messages.order_by('-timestamp').first()
-        if latest_group_message:
-            group_conversations.append({
-                'group': group,
-                'latest_message': latest_group_message,
-                # Pour les groupes, on ne gère pas de "non lus" de la même manière que les messages privés
-                # On pourrait ajouter une logique plus tard si nécessaire
-                'unread_count': 0 
-            })
-        else:
-            group_conversations.append({
-                'group': group,
-                'latest_message': None,
-                'unread_count': 0
-            })
-    
-    # Combiner les messages privés et les groupes pour l'affichage
-    all_conversations = []
-    for conv in messages_by_sender:
-        all_conversations.append({
-            'type': 'private',
-            'id': conv['sender'].id,
-            'name': conv['sender'].username,
-            'latest_message_body': conv['latest_message'].body,
-            'latest_message_timestamp': conv['latest_message'].timestamp,
-            'unread_count': conv['unread_count'],
-            'sender_object': conv['sender']
-        })
-
-    for conv in group_conversations:
-        all_conversations.append({
+        group_conversations.append({
             'type': 'group',
-            'id': conv['group'].id,
-            'name': conv['group'].name,
-            'latest_message_body': conv['latest_message'].content if conv['latest_message'] else "Aucun message",
-            'latest_message_timestamp': conv['latest_message'].timestamp if conv['latest_message'] else conv['group'].created_at,
-            'unread_count': conv['unread_count'],
-            'group_object': conv['group']
+            'id': group.id,
+            'name': group.name,
+            'latest_message_body': latest_group_message.content if latest_group_message else "Aucun message",
+            'latest_message_timestamp': latest_group_message.timestamp if latest_group_message else group.created_at,
+            'unread_count': 0, # Pas de gestion des non lus pour les groupes pour l'instant
+            'group_object': group
         })
+    
+    # Ajouter les groupes aux conversations si le filtre n'est pas 'private'
+    if filter_type != 'private':
+        all_conversations.extend(group_conversations)
+
+    # Récupérer les messages privés si le filtre n'est pas 'groups'
+    if filter_type != 'groups':
+        all_received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+        grouped_messages = {}
+        for msg in all_received_messages:
+            sender_id = msg.sender.id
+            if sender_id not in grouped_messages:
+                grouped_messages[sender_id] = {
+                    'sender': msg.sender,
+                    'latest_message': msg,
+                    'unread_count': 0
+                }
+            if not msg.read:
+                grouped_messages[sender_id]['unread_count'] += 1
+
+        messages_by_sender = sorted(
+            grouped_messages.values(),
+            key=lambda x: x['latest_message'].timestamp,
+            reverse=True
+        )
+
+        for conv in messages_by_sender:
+            all_conversations.append({
+                'type': 'private',
+                'id': conv['sender'].id,
+                'name': conv['sender'].username,
+                'latest_message_body': conv['latest_message'].body,
+                'latest_message_timestamp': conv['latest_message'].timestamp,
+                'unread_count': conv['unread_count'],
+                'sender_object': conv['sender']
+            })
 
     # Trier toutes les conversations par le timestamp du dernier message
     all_conversations.sort(key=lambda x: x['latest_message_timestamp'], reverse=True)
-
 
     # Appliquer le filtre de recherche si une requête est présente
     if search_query:
@@ -235,9 +221,9 @@ def messages_view(request):
                 filtered_all_conversations.append(conversation)
         all_conversations = filtered_all_conversations
 
-
     return render(request, 'messages.html', {
         'all_conversations': all_conversations,
+        'filter_type': filter_type, # Passer le type de filtre au template
     })
 
 @login_required

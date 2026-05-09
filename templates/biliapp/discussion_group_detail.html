@@ -5,74 +5,73 @@
 {% block title %}Discussion de Groupe: {{ group.name }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+<div class="container mx-auto px-4 py-4 sm:py-8"> {# Ajustement du padding vertical pour mobile #}
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 sm:p-6"> {# Ajustement du padding pour mobile #}
         {# Nouvelle en-tête de groupe avec bouton retour, avatar et nom #}
-        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
-            <a href="{% url 'discussion_group_list' %}" class="text-gray-600 hover:text-accent transition-colors mr-4">
-                <i class="fas fa-arrow-left text-2xl"></i>
+        <div class="flex items-center mb-4 pb-3 sm:mb-6 sm:pb-4 border-b border-gray-200">
+            <a href="{% url 'discussion_group_list' %}" class="text-gray-600 hover:text-accent transition-colors mr-2 sm:mr-4">
+                <i class="fas fa-arrow-left text-xl sm:text-2xl"></i> {# Taille d'icône responsive #}
             </a>
-            <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-xl font-bold text-white mr-3 flex-shrink-0">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-500 flex items-center justify-center text-lg sm:text-xl font-bold text-white mr-2 sm:mr-3 flex-shrink-0"> {# Taille d'avatar responsive #}
                 {{ group.name|slice:":1"|upper }}
             </div>
-            <h2 class="text-3xl font-bold text-primary flex-grow">{{ group.name }}</h2>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-primary flex-grow">{{ group.name }}</h2> {# Taille de titre responsive #}
 
             {# Bouton pour afficher/masquer les détails du groupe #}
-            <button type="button" id="toggleGroupDetails" class="p-2 text-gray-500 hover:text-accent transition-colors ml-4" title="Afficher les détails du groupe">
-                <i class="fas fa-ellipsis-h text-xl"></i>
+            <button type="button" id="toggleGroupDetails" class="p-1 sm:p-2 text-gray-500 hover:text-accent transition-colors ml-2 sm:ml-4" title="Afficher les détails du groupe">
+                <i class="fas fa-ellipsis-h text-lg sm:text-xl"></i> {# Taille d'icône responsive #}
             </button>
 
-            {# Actions du groupe (ex: gérer le groupe) - peut-être déplacer ceci dans les détails cachés ou un menu déroulant #}
-            {# For now, keep it separate, or integrate into the details section if it's admin-only info #}
+            {# Actions du groupe (ex: gérer le groupe) #}
             {% if request.user == group.admin %}
-                <a href="#" class="px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded-md hover:bg-gray-300 transition-colors ml-2">
-                    <i class="fas fa-edit"></i> Gérer
+                <a href="#" class="px-3 py-1 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm font-bold rounded-md hover:bg-gray-300 transition-colors ml-1 sm:ml-2"> {# Taille de bouton responsive #}
+                    <i class="fas fa-edit"></i> <span class="hidden sm:inline">Gérer</span>
                 </a>
             {% endif %}
         </div>
 
         {# Section des détails du groupe (cachée par défaut) #}
-        <div id="groupDetailsContent" class="hidden mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p class="text-slate-700 mb-2"><strong>Description:</strong> {{ group.description|default:"Pas de description pour ce groupe." }}</p>
-            <div class="flex items-center text-sm text-slate-500 mb-2">
+        <div id="groupDetailsContent" class="hidden mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200"> {# Padding responsive #}
+            <p class="text-sm sm:text-base text-slate-700 mb-2"><strong>Description:</strong> {{ group.description|default:"Pas de description pour ce groupe." }}</p>
+            <div class="flex items-center text-xs sm:text-sm text-slate-500 mb-2"> {# Taille de texte responsive #}
                 <i class="fas fa-user-shield mr-1"></i>
-                <span class="mr-3">Admin: {{ group.admin.username }}</span>
+                <span class="mr-2 sm:mr-3">Admin: {{ group.admin.username }}</span>
                 <i class="fas fa-clock mr-1"></i>
                 <span>Créé: {{ group.created_at|time_ago }}</span>
             </div>
 
-            <h4 class="text-lg font-semibold text-primary mb-2">Membres du groupe ({{ group.members.count }})</h4>
-            <div class="flex flex-wrap gap-2">
+            <h4 class="text-base sm:text-lg font-semibold text-primary mb-2">Membres du groupe ({{ group.members.count }})</h4> {# Taille de titre responsive #}
+            <div class="flex flex-wrap gap-1 sm:gap-2"> {# Gap responsive #}
                 {% for member in group.members.all %}
-                    <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                    <span class="inline-flex items-center bg-blue-100 text-blue-800 text-xs sm:text-sm font-medium px-2 py-0.5 rounded-full"> {# Taille de tag responsive #}
                         <i class="fas fa-user mr-1"></i> {{ member.username }}
                     </span>
                 {% empty %}
-                    <p class="text-slate-500">Ce groupe n'a pas encore de membres.</p>
+                    <p class="text-sm text-slate-500">Ce groupe n'a pas encore de membres.</p>
                 {% endfor %}
             </div>
         </div>
 
 
-        <div id="chat-box" class="bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto mb-4 flex flex-col-reverse">
+        <div id="chat-box" class="bg-gray-100 p-3 sm:p-4 rounded-lg max-h-80 sm:max-h-96 overflow-y-auto mb-3 sm:mb-4 flex flex-col-reverse"> {# Padding et hauteur responsive #}
             {% if group_messages %}
                 {% for message in group_messages %}
-                    <div class="flex items-start mb-3 {% if message.sender == request.user %}justify-end{% endif %}">
+                    <div class="flex items-start mb-2 sm:mb-3 {% if message.sender == request.user %}justify-end{% endif %}">
                         {% if message.sender != request.user %}
-                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3 flex-shrink-0">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs sm:text-sm font-bold text-gray-700 mr-2 sm:mr-3 flex-shrink-0">
                                 {{ message.sender.username|slice:":1"|upper }}
                             </div>
                         {% endif %}
-                        <div class="{% if message.sender == request.user %}bg-accent text-white rounded-bl-lg{% else %}bg-white text-gray-800 rounded-br-lg{% endif %} p-3 rounded-t-lg shadow-sm max-w-[70%]">
-                            <p class="font-semibold text-sm {% if message.sender == request.user %}text-white{% else %}text-primary{% endif %} mb-1">
+                        <div class="{% if message.sender == request.user %}bg-accent text-white rounded-bl-lg{% else %}bg-white text-gray-800 rounded-br-lg{% endif %} p-2 sm:p-3 rounded-t-lg shadow-sm max-w-[80%] sm:max-w-[70%]"> {# Padding et largeur responsive #}
+                            <p class="font-semibold text-xs sm:text-sm {% if message.sender == request.user %}text-white{% else %}text-primary{% endif %} mb-1">
                                 {% if message.sender == request.user %}Vous{% else %}{{ message.sender.username }}{% endif %}
-                                <span class="text-xs {% if message.sender == request.user %}text-blue-200{% else %}text-slate-500{% endif %} ml-2">{{ message.timestamp|time_ago }}</span>
+                                <span class="text-xs {% if message.sender == request.user %}text-blue-200{% else %}text-slate-500{% endif %} ml-1 sm:ml-2">{{ message.timestamp|time_ago }}</span>
                             </p>
                             {% if message.content %}
                                 <p class="text-sm">{{ message.content }}</p>
                             {% endif %}
                             {% if message.attachment %}
-                                <div class="mt-2">
+                                <div class="mt-1 sm:mt-2">
                                     {% if message.attachment.url|lower|slice:"-4:" == ".jpg" or message.attachment.url|lower|slice:"-4:" == ".png" or message.attachment.url|lower|slice:"-5:" == ".jpeg" or message.attachment.url|lower|slice:"-4:" == ".gif" %}
                                         <img src="{{ message.attachment.url }}" alt="Pièce jointe" class="max-w-full h-auto rounded-md">
                                     {% elif message.attachment.url|lower|slice:"-4:" == ".mp3" or message.attachment.url|lower|slice:"-4:" == ".wav" %}
@@ -80,7 +79,7 @@
                                     {% elif message.attachment.url|lower|slice:"-4:" == ".mp4" or message.attachment.url|lower|slice:"-4:" == ".mov" %}
                                         <video controls src="{{ message.attachment.url }}" class="max-w-full h-auto rounded-md"></video>
                                     {% else %}
-                                        <a href="{{ message.attachment.url }}" target="_blank" class="text-sm underline {% if message.sender == request.user %}text-blue-200{% else %}text-accent{% endif %}">
+                                        <a href="{{ message.attachment.url }}" target="_blank" class="text-xs sm:text-sm underline {% if message.sender == request.user %}text-blue-200{% else %}text-accent{% endif %}">
                                             <i class="fas fa-file-download mr-1"></i> Télécharger: {{ message.attachment.name|cut:"group_attachments/" }}
                                         </a>
                                     {% endif %}
@@ -88,14 +87,14 @@
                             {% endif %}
                         </div>
                         {% if message.sender == request.user %}
-                            <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-sm font-bold text-white ml-3 flex-shrink-0">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center text-xs sm:text-sm font-bold text-white ml-2 sm:ml-3 flex-shrink-0">
                                 {{ message.sender.username|slice:":1"|upper }}
                             </div>
                         {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-slate-500 text-center">Aucun message dans ce groupe pour le moment.</p>
+                <p class="text-sm text-slate-500 text-center">Aucun message dans ce groupe pour le moment.</p>
             {% endif %}
         </div>
 
@@ -103,34 +102,34 @@
         {% if request.user in group.members.all %}
             <form action="{% url 'discussion_group_detail' pk=group.pk %}" method="post" enctype="multipart/form-data" class="flex flex-col space-y-2">
                 {% csrf_token %}
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1 sm:space-x-2"> {# Espacement responsive #}
                     {# Bouton Emoji (placeholder) #}
-                    <button type="button" class="p-2 text-gray-500 hover:text-accent transition-colors" title="Ajouter un emoji">
-                        <i class="fas fa-smile text-xl"></i>
+                    <button type="button" class="p-1 sm:p-2 text-gray-500 hover:text-accent transition-colors" title="Ajouter un emoji">
+                        <i class="fas fa-smile text-lg sm:text-xl"></i>
                     </button>
 
                     {# Bouton Voix (placeholder) #}
-                    <button type="button" class="p-2 text-gray-500 hover:text-accent transition-colors" title="Envoyer un message vocal">
-                        <i class="fas fa-microphone text-xl"></i>
+                    <button type="button" class="p-1 sm:p-2 text-gray-500 hover:text-accent transition-colors" title="Envoyer un message vocal">
+                        <i class="fas fa-microphone text-lg sm:text-xl"></i>
                     </button>
 
                     {# Bouton Pièce jointe #}
-                    <label for="attachment-input" class="p-2 text-gray-500 hover:text-accent transition-colors cursor-pointer" title="Joindre un fichier">
-                        <i class="fas fa-paperclip text-xl"></i>
+                    <label for="attachment-input" class="p-1 sm:p-2 text-gray-500 hover:text-accent transition-colors cursor-pointer" title="Joindre un fichier">
+                        <i class="fas fa-paperclip text-lg sm:text-xl"></i>
                     </label>
                     <input type="file" id="attachment-input" name="attachment" class="hidden">
 
-                    <textarea name="message" id="message-input" rows="1" placeholder="Écrire un message..." class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none"></textarea>
+                    <textarea name="message" id="message-input" rows="1" placeholder="Écrire un message..." class="flex-grow p-2 sm:p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none text-sm sm:text-base"></textarea> {# Taille de texte responsive #}
 
-                    <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-paper-plane"></i> Envoyer
+                    <button type="submit" class="px-3 py-2 sm:px-5 sm:py-3 bg-accent text-white text-sm sm:text-base font-bold rounded-md hover:bg-blue-700 transition-colors"> {# Taille de bouton responsive #}
+                        <i class="fas fa-paper-plane"></i> <span class="hidden sm:inline">Envoyer</span>
                     </button>
                 </div>
                 {# Affichage du nom du fichier sélectionné #}
-                <div id="selected-file-name" class="text-sm text-gray-600 ml-12 hidden"></div>
+                <div id="selected-file-name" class="text-xs sm:text-sm text-gray-600 ml-10 sm:ml-12 hidden"></div> {# Marge et taille de texte responsive #}
             </form>
         {% else %}
-            <p class="text-red-500 text-center">Vous devez être membre de ce groupe pour envoyer un message.</p>
+            <p class="text-sm text-red-500 text-center">Vous devez être membre de ce groupe pour envoyer un message.</p>
         {% endif %}
     </div>
 </div>
@@ -164,16 +163,12 @@
             this.style.height = (this.scrollHeight) + 'px';
         });
 
-        // --- Nouvelle logique pour le bouton "..." ---
         const toggleGroupDetailsButton = document.getElementById('toggleGroupDetails');
         const groupDetailsContent = document.getElementById('groupDetailsContent');
 
         if (toggleGroupDetailsButton && groupDetailsContent) {
             toggleGroupDetailsButton.addEventListener('click', function() {
                 groupDetailsContent.classList.toggle('hidden');
-                // Optionnel: changer l'icône du bouton si vous voulez indiquer l'état
-                // this.querySelector('i').classList.toggle('fa-ellipsis-h');
-                // this.querySelector('i').classList.toggle('fa-times'); // ou une flèche vers le haut/bas
             });
         }
     });

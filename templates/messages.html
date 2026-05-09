@@ -4,99 +4,109 @@
 {% block title %}Mes Conversations{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-    {# Bouton Créer un groupe de discussion pour les admins #}
-    {% if request.user.is_staff or request.user.is_superuser %}
-        <div class="flex justify-end mb-4">
-            <a href="{% url 'create_discussion_group' %}" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2">
-                <i class="fas fa-plus-circle"></i>
-                <span>Créer un groupe de discussion</span>
+<div class="container mx-auto px-2 py-4 sm:px-4 sm:py-8"> {# Ajustement du padding horizontal et vertical pour mobile #}
+    <div class="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-3 sm:p-6"> {# Prend toute la largeur sur mobile, padding responsive #}
+        {# Bouton Créer un groupe de discussion pour les admins #}
+        {% if request.user.is_staff or request.user.is_superuser %}
+            <div class="flex flex-col sm:flex-row justify-end sm:items-center mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
+                <a href="{% url 'create_discussion_group' %}" class="w-full sm:w-auto px-4 py-2 bg-accent text-white text-sm font-bold rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Créer un groupe</span>
+                </a>
+            </div>
+        {% endif %}
+
+        {# Bouton pour voir seulement les groupes #}
+        <div class="flex justify-start mb-4">
+            <a href="{% url 'messages' %}?filter=groups" class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-bold rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-2">
+                <i class="fas fa-users"></i>
+                <span>Voir seulement les groupes</span>
             </a>
         </div>
-    {% endif %}
 
-    {# Champ de recherche #}
-    <div class="mb-6">
-        <form method="get" action="{% url 'messages' %}" class="flex items-center space-x-2">
-            <input type="text" name="q" placeholder="Rechercher par expéditeur, groupe ou contenu..."
-                   class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                   value="{{ request.GET.q }}">
-            <button type="submit" class="px-5 py-3 bg-accent text-white font-bold rounded-md hover:bg-blue-700 transition-colors">
-                <i class="fas fa-search"></i>
-            </button>
-            {% if request.GET.q %}
-                <a href="{% url 'messages' %}" class="px-5 py-3 bg-gray-300 text-gray-800 font-bold rounded-md hover:bg-gray-400 transition-colors">
-                    <i class="fas fa-times"></i>
-                </a>
-            {% endif %}
-        </form>
-    </div>
+        {# Champ de recherche #}
+        <div class="mb-6">
+            <form method="get" action="{% url 'messages' %}" class="flex items-center space-x-2">
+                <input type="text" name="q" placeholder="Rechercher par expéditeur, groupe ou contenu..."
+                       class="flex-grow p-2 sm:p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-sm sm:text-base"
+                       value="{{ request.GET.q }}">
+                <button type="submit" class="px-3 py-2 sm:px-5 sm:py-3 bg-accent text-white text-sm sm:text-base font-bold rounded-md hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+                {% if request.GET.q %}
+                    <a href="{% url 'messages' %}" class="px-3 py-2 sm:px-5 sm:py-3 bg-gray-300 text-gray-800 text-sm sm:text-base font-bold rounded-md hover:bg-gray-400 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </a>
+                {% endif %}
+            </form>
+        </div>
 
-    {% if all_conversations %}
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <ul>
-                {% for conversation in all_conversations %}
-                    <li class="border-b border-slate-200 last:border-b-0">
-                        {% if conversation.type == 'private' %}
-                            <a href="{% url 'message_detail' user_id=conversation.id %}" class="block p-4 hover:bg-gray-50 transition-colors {% if conversation.unread_count > 0 %}bg-blue-50{% endif %} flex items-center">
-                                {# Avatar à gauche #}
-                                <div class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-700 mr-4 flex-shrink-0">
-                                    {{ conversation.name|slice:":1"|upper }}
-                                </div>
+        {% if all_conversations %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <ul>
+                    {% for conversation in all_conversations %}
+                        <li class="border-b border-slate-200 last:border-b-0">
+                            {% if conversation.type == 'private' %}
+                                <a href="{% url 'message_detail' user_id=conversation.id %}" class="block p-3 sm:p-4 hover:bg-gray-50 transition-colors {% if conversation.unread_count > 0 %}bg-blue-50{% endif %} flex items-center">
+                                    {# Avatar à gauche #}
+                                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 flex items-center justify-center text-base sm:text-lg font-bold text-gray-700 mr-3 sm:mr-4 flex-shrink-0">
+                                        {{ conversation.name|slice:":1"|upper }}
+                                    </div>
 
-                                <div class="flex-grow">
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-base font-semibold text-primary flex items-center">
-                                            <i class="fas fa-user mr-2 text-slate-500"></i> {{ conversation.name }}
+                                    <div class="flex-grow">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-sm sm:text-base font-semibold text-primary flex items-center">
+                                                <i class="fas fa-user mr-1 sm:mr-2 text-slate-500"></i> {{ conversation.name }}
+                                                {% if conversation.unread_count > 0 %}
+                                                    <span class="ml-1 sm:ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        {{ conversation.unread_count }}
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+                                            <span class="text-xs text-slate-500 ml-2 sm:ml-4 flex-shrink-0">
+                                                {{ conversation.latest_message_timestamp|time_ago }} {# Utilisation du filtre time_ago #}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
                                             {% if conversation.unread_count > 0 %}
-                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                    {{ conversation.unread_count }}
-                                                </span>
+                                                <span class="inline-block w-1.5 h-1.5 mr-1.5 bg-accent rounded-full"></span>
                                             {% endif %}
+                                            {{ conversation.latest_message_body|truncatechars:25 }} {# Truncate un peu plus pour l'aperçu #}
                                         </p>
-                                        <span class="text-xs text-slate-500 ml-4 flex-shrink-0">
-                                            {{ conversation.latest_message_timestamp|time_ago }} {# Utilisation du filtre time_ago #}
-                                        </span>
                                     </div>
-                                    <p class="text-sm text-slate-700 {% if conversation.unread_count > 0 %}font-semibold{% endif %} mt-1">
-                                        {% if conversation.unread_count > 0 %}
-                                            <span class="inline-block w-2 h-2 mr-2 bg-accent rounded-full"></span>
-                                        {% endif %}
-                                        {{ conversation.latest_message_body|truncatechars:30 }} {# Truncate un peu plus pour l'aperçu #}
-                                    </p>
-                                </div>
-                            </a>
-                        {% elif conversation.type == 'group' %}
-                            <a href="{% url 'discussion_group_detail' pk=conversation.id %}" class="block p-4 hover:bg-gray-50 transition-colors flex items-center">
-                                {# Icône de groupe à gauche #}
-                                <div class="w-12 h-12 rounded-full bg-purple-300 flex items-center justify-center text-lg font-bold text-purple-700 mr-4 flex-shrink-0">
-                                    <i class="fas fa-users"></i>
-                                </div>
+                                </a>
+                            {% elif conversation.type == 'group' %}
+                                <a href="{% url 'discussion_group_detail' pk=conversation.id %}" class="block p-3 sm:p-4 hover:bg-gray-50 transition-colors flex items-center">
+                                    {# Icône de groupe à gauche #}
+                                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-300 flex items-center justify-center text-base sm:text-lg font-bold text-purple-700 mr-3 sm:mr-4 flex-shrink-0">
+                                        <i class="fas fa-users"></i>
+                                    </div>
 
-                                <div class="flex-grow">
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-base font-semibold text-primary flex items-center">
-                                            <i class="fas fa-comments mr-2 text-purple-500"></i> {{ conversation.name }}
+                                    <div class="flex-grow">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-sm sm:text-base font-semibold text-primary flex items-center">
+                                                <i class="fas fa-comments mr-1 sm:mr-2 text-purple-500"></i> {{ conversation.name }}
+                                            </p>
+                                            <span class="text-xs text-slate-500 ml-2 sm:ml-4 flex-shrink-0">
+                                                {{ conversation.latest_message_timestamp|time_ago }} {# Utilisation du filtre time_ago #}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-slate-700 mt-1">
+                                            {{ conversation.latest_message_body|truncatechars:25 }}
                                         </p>
-                                        <span class="text-xs text-slate-500 ml-4 flex-shrink-0">
-                                            {{ conversation.latest_message_timestamp|time_ago }} {# Utilisation du filtre time_ago #}
-                                        </span>
                                     </div>
-                                    <p class="text-sm text-slate-700 mt-1">
-                                        {{ conversation.latest_message_body|truncatechars:30 }}
-                                    </p>
-                                </div>
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% else %}
-        <div class="bg-white shadow-lg rounded-lg p-8 text-center">
-            <p class="text-slate-600 text-lg">Vous n'avez aucune conversation pour le moment.</p>
-            <i class="fas fa-envelope-open-text text-6xl text-slate-300 mt-6"></i>
-        </div>
-    {% endif %}
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="bg-white shadow-lg rounded-lg p-6 sm:p-8 text-center">
+                <p class="text-base sm:text-lg text-slate-600 mb-4">Vous n'avez aucune conversation pour le moment.</p>
+                <i class="fas fa-envelope-open-text text-5xl sm:text-6xl text-slate-300 mt-6"></i>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

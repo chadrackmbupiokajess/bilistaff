@@ -4,265 +4,73 @@
 {% block title %}Conversation avec {{ other_user.username }}{% endblock %}
 
 {% block content %}
-{# Header - Fixed at the top of the viewport #}
-<div class="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 py-3 px-4">
-    <div class="max-w-3xl mx-auto w-full flex items-center"> {# Inner container to constrain width and center #}
-        <a href="{% url 'messages' %}" class="text-slate-600 hover:text-accent transition-colors text-xl mr-3">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        {# Avatar de l'autre utilisateur #}
-        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3 flex-shrink-0">
-            {{ other_user.username|slice:":1"|upper }}
+<div class="container mx-auto px-2 py-4 sm:px-4 sm:py-8">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-3 sm:p-6">
+        {# Nouvelle en-tête de conversation avec bouton retour, avatar et nom #}
+        <div class="flex items-center mb-4 pb-3 sm:mb-6 sm:pb-4 border-b border-gray-200">
+            <a href="{% url 'messages' %}" class="text-gray-600 hover:text-accent transition-colors mr-2 sm:mr-4">
+                <i class="fas fa-arrow-left text-xl sm:text-2xl"></i>
+            </a>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-500 flex items-center justify-center text-lg sm:text-xl font-bold text-white mr-2 sm:mr-3 flex-shrink-0">
+                {{ other_user.username|slice:":1"|upper }}
+            </div>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-primary flex-grow">{{ other_user.username }}</h2>
         </div>
-        <h1 class="text-lg font-bold text-primary">{{ other_user.username }}</h1>
-    </div>
-</div>
 
-{# Main content area - takes up remaining space and handles scrolling #}
-{# The h-screen ensures it takes full viewport height, pt/pb create space for fixed header/footer #}
-<div class="flex flex-col h-screen pt-16 pb-24 max-w-3xl mx-auto">
-    {# Message List - now the only scrollable part within this container #}
-    <div class="p-4 overflow-y-auto flex-grow flex flex-col" id="message-list">
-        {% if messages_conversation %}
-            {# Regrouper les messages par date #}
-            {% regroup messages_conversation by timestamp.date as messages_by_date %}
-
-            {# Itérer sur les groupes de dates (du plus ancien au plus récent) #}
-            {% for date_group in messages_by_date %}
-                {# Affichage de la date centrée AU-DESSUS du bloc de messages du jour #}
-                <div class="text-center my-4">
-                    <span class="inline-block bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        {{ date_group.grouper|date:"D, d M Y" }}
-                    </span>
-                </div>
-
-                {# Itérer sur les messages dans chaque groupe (du plus ancien au plus récent) #}
-                {% for message in date_group.list %}
-                    <div class="mb-4 flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} items-end">
-                        {# Avatar de l'autre utilisateur (à gauche) #}
+        <div id="chat-box" class="bg-gray-100 p-3 sm:p-4 rounded-lg max-h-96 overflow-y-auto mb-3 sm:mb-4 flex flex-col-reverse">
+            {% if messages_conversation %}
+                {% for message in messages_conversation %}
+                    <div class="flex items-start mb-2 sm:mb-3 {% if message.sender == request.user %}justify-end{% endif %}">
                         {% if message.sender != request.user %}
-                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-2 flex-shrink-0">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs sm:text-sm font-bold text-gray-700 mr-2 sm:mr-3 flex-shrink-0">
                                 {{ message.sender.username|slice:":1"|upper }}
                             </div>
                         {% endif %}
-
-                        {# Bulle de message #}
-                        <div class="inline-block p-3 rounded-xl max-w-xs
-                                    {% if message.sender == request.user %}
-                                        bg-accent text-white rounded-br-none
-                                    {% else %}
-                                        bg-gray-200 text-gray-800 rounded-bl-none
-                                    {% endif %}">
-                            <p class="text-base">{{ message.body }}</p>
-                            <span class="text-xs {% if message.sender == request.user %}text-blue-100{% else %}text-gray-600{% endif %} block mt-1 text-right">{{ message.timestamp|date:"H\hi" }}</span> {# Affichage de l'heure exacte #}
+                        <div class="{% if message.sender == request.user %}bg-accent text-white rounded-bl-lg{% else %}bg-white text-gray-800 rounded-br-lg{% endif %} p-2 sm:p-3 rounded-t-lg shadow-sm max-w-[80%] sm:max-w-[70%]">
+                            <p class="font-semibold text-xs sm:text-sm {% if message.sender == request.user %}text-white{% else %}text-primary{% endif %} mb-1">
+                                {% if message.sender == request.user %}Vous{% else %}{{ message.sender.username }}{% endif %}
+                                <span class="text-xs {% if message.sender == request.user %}text-blue-200{% else %}text-slate-500{% endif %} ml-1 sm:ml-2">{{ message.timestamp|time_ago }}</span>
+                            </p>
+                            <p class="text-sm">{{ message.body }}</p>
                         </div>
-
-                        {# Avatar de l'utilisateur connecté (à droite) #}
                         {% if message.sender == request.user %}
-                            <div class="w-8 h-8 rounded-full bg-blue-300 flex items-center justify-center text-sm font-bold text-blue-700 ml-2 flex-shrink-0">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center text-xs sm:text-sm font-bold text-white ml-2 sm:ml-3 flex-shrink-0">
                                 {{ message.sender.username|slice:":1"|upper }}
                             </div>
                         {% endif %}
                     </div>
                 {% endfor %}
-            {% endfor %}
-        {% else %}
-            <p class="text-slate-600 text-center">Aucun message dans cette conversation.</p>
-        {% endif %}
-    </div>
-</div>
-
-{# Formulaire de réponse - Fixed at the bottom of the viewport #}
-<div class="fixed bottom-0 left-0 right-0 z-10 p-4 border-t border-gray-200 bg-white flex justify-center">
-    <div class="max-w-3xl w-full"> {# Inner container to constrain width #}
-        {# Conteneur du sélecteur d'emojis (initiallement caché) #}
-        <div id="emoji-picker-container" class="absolute bottom-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg p-3 mb-2 hidden max-h-60 overflow-y-auto">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Smileys & Émotions</h3>
-            <div class="grid grid-cols-8 gap-2 text-xl mb-4">
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😀">😀</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😂">😂</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😊">😊</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😍">😍</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🥰">🥰</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤩">🤩</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🥳">🥳</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤔">🤔</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😮">😮</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😴">😴</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😭">😭</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😡">😡</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🤯">🤯</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😷">😷</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😇">😇</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="😈">😈</span>
-            </div>
-
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Gestes & Personnes</h3>
-            <div class="grid grid-cols-8 gap-2 text-xl mb-4">
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👍">👍</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👎">👎</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👏">👏</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🙏">🙏</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👋">👋</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👨‍💻">👨‍💻</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="👩‍🎓">👩‍🎓</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🧑‍🤝‍🧑">🧑‍🤝‍🧑</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💪">💪</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🚶">🚶</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🏃">🏃</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💃">💃</span>
-            </div>
-
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Nature & Animaux</h3>
-            <div class="grid grid-cols-8 gap-2 text-xl mb-4">
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🐶">🐶</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🐱">🐱</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🦁">🦁</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌸">🌸</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌳">🌳</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="☀️">☀️</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌧️">🌧️</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🌍">🌍</span>
-            </div>
-
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Objets</h3>
-            <div class="grid grid-cols-8 gap-2 text-xl mb-4">
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💡">💡</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="📱">📱</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💻">💻</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="📚">📚</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🎁">🎁</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="⏰">⏰</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💰">💰</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🛠️">🛠️</span>
-            </div>
-
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Symboles</h3>
-            <div class="grid grid-cols-8 gap-2 text-xl">
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="❤️">❤️</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💔">💔</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="✨">✨</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="🔥">🔥</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="✅">✅</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="❌">❌</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="⚠️">⚠️</span>
-                <span class="cursor-pointer hover:bg-gray-100 p-1 rounded" data-emoji="💯">💯</span>
-            </div>
+            {% else %}
+                <p class="text-sm text-slate-500 text-center">Aucun message dans cette conversation pour le moment.</p>
+            {% endif %}
         </div>
 
-        {# Conteneur des options d'attachement (initiallement caché) #}
-        <div id="attachment-options-container" class="absolute bottom-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg p-3 mb-2 hidden">
-            <div class="flex justify-around items-center text-2xl py-2">
-                <button type="button" class="p-3 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Image"><i class="fas fa-image"></i></button>
-                <button type="button" class="p-3 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Video"><i class="fas fa-video"></i></button>
-                <button type="button" class="p-3 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors" title="Document"><i class="fas fa-file-alt"></i></button>
-                <button type="button" class="p-3 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Audio"><i class="fas fa-microphone-alt"></i></button>
-                <button type="button" class="p-3 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors" title="Camera"><i class="fas fa-camera"></i></button>
-            </div>
-        </div>
-
-        <form method="post" action="{% url 'message_detail' user_id=other_user.id %}" class="flex items-end">
+        {# Formulaire pour envoyer un message #}
+        <form action="{% url 'message_detail' user_id=other_user.id %}" method="post" class="flex items-center space-x-2">
             {% csrf_token %}
-            {# Bouton Plus #}
-            <button type="button" id="plus-button" class="p-2 text-slate-600 hover:text-accent transition-colors text-xl rounded-md mr-1">
-                <i class="fas fa-plus"></i>
+            <textarea name="body" rows="1" placeholder="Écrire un message..." class="flex-grow p-2 sm:p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none text-sm sm:text-base"></textarea>
+            <button type="submit" class="px-3 py-2 sm:px-5 sm:py-3 bg-accent text-white text-sm sm:text-base font-bold rounded-md hover:bg-blue-700 transition-colors">
+                <i class="fas fa-paper-plane"></i> <span class="hidden sm:inline">Envoyer</span>
             </button>
-
-            <div class="relative flex-grow mr-1"> {# Conteneur relatif pour la textarea et le bouton emoji #}
-                <textarea name="body" id="message-textarea" rows="1" class="w-full p-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-none" placeholder="Écrivez votre message ici..." required></textarea>
-                <button type="button" id="emoji-button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-600 hover:text-accent transition-colors text-xl rounded-md">
-                    <i class="fas fa-smile"></i>
-                </button>
-            </div>
-
-            {# Conteneur pour les boutons d'envoi/micro #}
-            <div class="relative">
-                <button type="submit" id="send-button" class="p-3 bg-accent text-white text-xl rounded-full hover:bg-blue-700 transition-colors hidden">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-                <button type="button" id="microphone-button" class="p-3 bg-gray-300 text-gray-800 text-xl rounded-full hover:bg-gray-400 transition-colors">
-                    <i class="fas fa-microphone"></i>
-                </button>
-            </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Faire défiler la liste des messages vers le bas au chargement de la page
     document.addEventListener('DOMContentLoaded', function() {
-        const messageList = document.getElementById('message-list');
-        if (messageList) {
-            messageList.scrollTop = messageList.scrollHeight;
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
         }
 
-        // Logique JavaScript pour le sélecteur d'emojis
-        const emojiButton = document.getElementById('emoji-button');
-        const emojiPickerContainer = document.getElementById('emoji-picker-container');
-        const messageTextarea = document.getElementById('message-textarea');
-
-        // Logique JavaScript pour le bouton Plus et les options d'attachement
-        const plusButton = document.getElementById('plus-button');
-        const attachmentOptionsContainer = document.getElementById('attachment-options-container');
-
-        if (emojiButton && emojiPickerContainer && messageTextarea && plusButton && attachmentOptionsContainer) {
-            // Fonction pour masquer tous les pickers
-            function hideAllPickers() {
-                emojiPickerContainer.classList.add('hidden');
-                attachmentOptionsContainer.classList.add('hidden');
-            }
-
-            emojiButton.addEventListener('click', function(event) {
-                event.stopPropagation(); // Empêche le clic de se propager au document
-                attachmentOptionsContainer.classList.add('hidden'); // Masque les options d'attachement si ouvertes
-                emojiPickerContainer.classList.toggle('hidden'); // Bascule le sélecteur d'emojis
+        const messageInput = document.querySelector('textarea[name="body"]');
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
             });
-
-            plusButton.addEventListener('click', function(event) {
-                event.stopPropagation(); // Empêche le clic de se propager au document
-                emojiPickerContainer.classList.add('hidden'); // Masque le sélecteur d'emojis si ouvert
-                attachmentOptionsContainer.classList.toggle('hidden'); // Bascule les options d'attachement
-            });
-
-            emojiPickerContainer.addEventListener('click', function(event) {
-                const target = event.target;
-                if (target.tagName === 'SPAN' && target.dataset.emoji) {
-                    messageTextarea.value += target.dataset.emoji;
-                    messageTextarea.focus(); // Remettre le focus sur la zone de texte
-                    // Pas de masquage automatique ici, l'utilisateur peut vouloir insérer plusieurs emojis
-                }
-            });
-
-            // Masquer les pickers si on clique en dehors
-            document.addEventListener('click', function(event) {
-                if (!emojiPickerContainer.contains(event.target) && !emojiButton.contains(event.target) &&
-                    !attachmentOptionsContainer.contains(event.target) && !plusButton.contains(event.target)) {
-                    hideAllPickers();
-                }
-            });
-        }
-
-        // Logique JavaScript pour basculer entre le bouton d'envoi et le bouton microphone
-        const sendButton = document.getElementById('send-button');
-        const microphoneButton = document.getElementById('microphone-button');
-
-        if (messageTextarea && sendButton && microphoneButton) {
-            // Fonction pour basculer la visibilité
-            function toggleSendMicrophoneButton() {
-                if (messageTextarea.value.trim().length > 0) {
-                    sendButton.classList.remove('hidden');
-                    microphoneButton.classList.add('hidden');
-                } else {
-                    sendButton.classList.add('hidden');
-                    microphoneButton.classList.remove('hidden');
-                }
-            }
-
-            // Vérifier l'état initial au chargement de la page
-            toggleSendMicrophoneButton();
-
-            // Écouter les changements dans la zone de texte
-            messageTextarea.addEventListener('input', toggleSendMicrophoneButton);
         }
     });
 </script>
